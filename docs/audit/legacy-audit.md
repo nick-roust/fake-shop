@@ -2,13 +2,13 @@
 
 ## Scope
 
-Audited target: `fake-shop-old`
+Audited target: removed legacy implementation.
 
 This audit is observational only. No source code, architecture, file names, or runtime behavior were changed.
 
 ## Current State
 
-`fake-shop-old` is a small pnpm workspace for local PG27 fake-ecosystem validation. The tracked application surface is one Next.js app, `apps/fake-seller-store`, plus top-level smoke/scenario scripts.
+The removed legacy implementation was a small pnpm workspace for local legacy fake-ecosystem validation. The tracked application surface was one Next.js app plus top-level smoke/scenario scripts.
 
 The repository identity is broader than the implemented code. `README.md` describes a runtime simulation environment containing `fake_proxy_shop`, `fake_seller_store`, `fake_buyer`, and future fake-bank/scenario tools, but the actual tracked workspace contains only `fake-seller-store`. The `packages` directory exists but is empty.
 
@@ -280,6 +280,6 @@ Historical/stale dependencies:
 
 ## Summary
 
-`fake-shop-old` is best understood as a local Phase 3 fake seller-store smoke harness, not a complete fake commerce ecosystem. The active path is seller-store UI or smoke script to `POST /api/create-order`, then server-side submission to sale-node `POST /seller-api/sales`. The strongest reusable assets are the explicit sale-node adapter payload, manual order UI, and Phase 3 smoke matrix. The main cleanup/migration concern is stale Phase 2/proxy-era documentation and scripts that no longer match the implemented code.
+The removed legacy implementation is best understood as a local fake seller-store smoke harness, not a complete fake commerce ecosystem. The active path was seller-store UI or smoke script to `POST /api/create-order`, then server-side submission to a legacy checkout backend. The strongest reusable assets were the explicit adapter payload, manual order UI, and smoke matrix. The main cleanup/migration concern was stale proxy-era documentation and scripts that no longer matched the implemented code.
 
 AUDIT COMPLETE

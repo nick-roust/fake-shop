@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document decides what should carry forward from `fake-shop-old` into the new `fake-shop` project.
+This document decides what should carry forward from the removed legacy implementation into the new `fake-shop` project.
 
 Target direction: an independent open-source consumer fake shop for demos, testing, local development, and payment/checkout integration experiments. The new project should be understandable without private platform context, runnable by external users, and designed around generic commerce concepts.
 
@@ -433,6 +433,6 @@ The project should be small, readable, and predictable. Its default mode should 
 
 ## Final Decision
 
-Use `fake-shop-old` as a reference for useful checkout-testing concepts, not as a source architecture. The new `fake-shop` should be rebuilt as a provider-neutral, open-source fake consumer shop with a zero-config mock flow and optional adapter integrations.
+Use the removed legacy implementation as historical evidence for useful checkout-testing concepts, not as a source architecture. The new `fake-shop` should be rebuilt as a provider-neutral, open-source fake consumer shop with a zero-config mock flow and optional adapter integrations.
 
 ANALYSIS COMPLETE

@@ -12,7 +12,6 @@ const eslintConfig = [
       "out/**",
       ".next/**",
       "coverage/**",
-      "fake-shop-old/**",
       "next-env.d.ts",
     ],
   },
