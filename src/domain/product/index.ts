@@ -14,6 +14,7 @@ export type Product = {
   description?: string;
   categoryId?: EntityId;
   price: Money;
+  active: boolean;
 };
 
 export type CreateCategoryInput = {
@@ -30,6 +31,7 @@ export type CreateProductInput = {
   description?: string;
   categoryId?: EntityId;
   price: Money;
+  active?: boolean;
 };
 
 export function createCategory(input: CreateCategoryInput): Category {
@@ -49,5 +51,6 @@ export function createProduct(input: CreateProductInput): Product {
     description: input.description?.trim() || undefined,
     categoryId: input.categoryId?.trim() || undefined,
     price: input.price,
+    active: input.active ?? true,
   };
 }

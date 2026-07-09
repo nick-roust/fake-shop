@@ -13,6 +13,12 @@ export function getShop(shopId: string): Shop | undefined {
   return getLocalDemoRepositories().shops.getById(shopId);
 }
 
+export function countShopProducts(shopId: string): number {
+  return getLocalDemoRepositories()
+    .products.list()
+    .filter((product) => product.shopId === shopId).length;
+}
+
 export function createManagedShop(values: ShopFormValues): Shop {
   const shop = createShop({
     id: createShopId(),

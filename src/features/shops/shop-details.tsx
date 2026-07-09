@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,10 +15,18 @@ type ShopDetailsProps = {
   onCancelEdit: () => void;
   onEdit: () => void;
   onSave: Parameters<typeof ShopForm>[0]["onSubmit"];
+  productCount: number;
   shop: Shop;
 };
 
-export function ShopDetails({ editing, onCancelEdit, onEdit, onSave, shop }: ShopDetailsProps) {
+export function ShopDetails({
+  editing,
+  onCancelEdit,
+  onEdit,
+  onSave,
+  productCount,
+  shop,
+}: ShopDetailsProps) {
   const viewModel = toShopViewModel(shop);
 
   return (
@@ -41,6 +50,7 @@ export function ShopDetails({ editing, onCancelEdit, onEdit, onSave, shop }: Sho
             <MetadataItem label="Scenario" value={viewModel.scenario} />
             <MetadataItem label="Display name" value={viewModel.displayName} />
             <MetadataItem label="Accent color" value={viewModel.accentColor} />
+            <MetadataItem label="Products" value={productCount.toString()} />
           </Grid>
         </CardContent>
       </Card>
@@ -64,11 +74,19 @@ export function ShopDetails({ editing, onCancelEdit, onEdit, onSave, shop }: Sho
 
       <Card>
         <CardHeader>
-          <CardTitle>Future areas</CardTitle>
+          <CardTitle>Products</CardTitle>
           <CardDescription>
-            Product catalog, checkout, and order views will connect to this shop in later phases.
+            Manage demo products that belong to this shop before future cart and checkout phases.
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <Link
+            className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
+            href={`/shops/${shop.id}/products`}
+          >
+            Open products
+          </Link>
+        </CardContent>
       </Card>
     </Stack>
   );
