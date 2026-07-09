@@ -7,9 +7,17 @@ import {
   type Cart,
   type CartItem,
 } from "@/domain/cart";
+import {
+  createCheckoutSessionForOrder,
+  transitionCheckoutSessionStatus,
+  type CheckoutSession,
+  type CheckoutSessionResultInfo,
+  type CheckoutSessionStatus,
+} from "@/domain/checkout";
 import { createCustomer, type Customer } from "@/domain/customer";
+import { createOrderFromCart, type Order } from "@/domain/order";
 import { type Product } from "@/domain/product";
-import { type Shop } from "@/domain/shop";
+import { createShop, type Shop } from "@/domain/shop";
 import { getLocalDemoRepositories } from "@/storage/local-demo-boundary";
 
 import { type CustomerFormValues } from "./customer-form";
@@ -17,14 +25,18 @@ import { type CustomerFormValues } from "./customer-form";
 export type CheckoutPreparation = {
   cart?: Cart;
   customer?: Customer;
+  order?: Order;
   products: Product[];
+  session?: CheckoutSession;
   shop?: Shop;
 };
 
 export type CheckoutReadiness = {
   cart: Cart;
   customer: Customer;
+  order: Order;
   ready: boolean;
+  session: CheckoutSession;
   total: string;
 };
 
@@ -38,6 +50,8 @@ export function getCheckoutPreparation(shopId: string): CheckoutPreparation {
       .filter((product) => product.shopId === shopId && product.active),
     cart: findCartForShop(shopId),
     customer: repositories.customers.list().at(-1),
+    order: findLatestOrderForShop(shopId),
+    session: findLatestCheckoutSessionForShop(shopId),
   };
 }
 
@@ -76,7 +90,8 @@ export function prepareCheckout(cart: Cart, values: CustomerFormValues): Checkou
     throw new Error("Cart must contain at least one product.");
   }
 
-  const customer = getLocalDemoRepositories().customers.save(
+  const repositories = getLocalDemoRepositories();
+  const customer = repositories.customers.save(
     createCustomer({
       id: createEntityId("customer"),
       name: `${values.firstName.trim()} ${values.lastName.trim()}`,
@@ -93,13 +108,46 @@ export function prepareCheckout(cart: Cart, values: CustomerFormValues): Checkou
       },
     })
   );
+  const order = repositories.orders.save(
+    createOrderFromCart({
+      id: createEntityId("order"),
+      cart,
+      customer,
+      status: "created",
+    })
+  );
+  const session = repositories.checkoutSessions.save(
+    createCheckoutSessionForOrder(createEntityId("checkout-session"), order)
+  );
+  const shop = repositories.shops.getById(order.shopId);
+
+  if (shop) {
+    repositories.shops.save(
+      createShop({
+        ...shop,
+        orderIds: Array.from(new Set([...shop.orderIds, order.id])),
+      })
+    );
+  }
 
   return {
     cart,
     customer,
+    order,
     ready: true,
+    session,
     total: getCartTotal(cart).amount.toFixed(2),
   };
+}
+
+export function updateCheckoutSessionStatus(
+  session: CheckoutSession,
+  nextStatus: CheckoutSessionStatus,
+  result?: CheckoutSessionResultInfo
+): CheckoutSession {
+  return getLocalDemoRepositories().checkoutSessions.save(
+    transitionCheckoutSessionStatus(session, nextStatus, result)
+  );
 }
 
 function getOrCreateCart(shopId: string, currency: string): Cart {
@@ -127,6 +175,26 @@ function findCartForShop(shopId: string): Cart | undefined {
   return getLocalDemoRepositories()
     .carts.list()
     .find((cart) => cart.shopId === shopId);
+}
+
+function findLatestOrderForShop(shopId: string): Order | undefined {
+  return getLocalDemoRepositories()
+    .orders.list()
+    .filter((order) => order.shopId === shopId)
+    .at(-1);
+}
+
+function findLatestCheckoutSessionForShop(shopId: string): CheckoutSession | undefined {
+  const latestOrder = findLatestOrderForShop(shopId);
+
+  if (!latestOrder) {
+    return undefined;
+  }
+
+  return getLocalDemoRepositories()
+    .checkoutSessions.list()
+    .filter((session) => session.orderId === latestOrder.id)
+    .at(-1);
 }
 
 function saveCart(cart: Cart): Cart {

@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState, LoadingState } from "@/components/ui/state";
 import { type Cart } from "@/domain/cart";
+import { type CheckoutSession, type CheckoutSessionStatus } from "@/domain/checkout";
 import { type Customer } from "@/domain/customer";
+import { type Order } from "@/domain/order";
 import { type Product } from "@/domain/product";
 import { type Shop } from "@/domain/shop";
 
@@ -17,6 +19,7 @@ import {
   getCheckoutPreparation,
   prepareCheckout,
   removeCartItem,
+  updateCheckoutSessionStatus,
   updateCartItemQuantity,
   type CheckoutReadiness,
 } from "./checkout-service";
@@ -31,7 +34,9 @@ type CheckoutPageProps = {
 type CheckoutPageState = {
   cart?: Cart;
   customer?: Customer;
+  order?: Order;
   products: Product[];
+  session?: CheckoutSession;
   shop?: Shop;
 };
 
@@ -103,6 +108,35 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
     }
   }
 
+  function handleStatusChange(nextStatus: CheckoutSessionStatus) {
+    const session = readiness?.session ?? state.session;
+
+    if (!session) {
+      setError("Create a checkout session before changing status.");
+      return;
+    }
+
+    try {
+      const updatedSession = updateCheckoutSessionStatus(session, nextStatus, {
+        message: `Status changed to ${nextStatus}.`,
+        recordedAt: new Date().toISOString(),
+      });
+
+      setReadiness((current) =>
+        current
+          ? {
+              ...current,
+              session: updatedSession,
+            }
+          : undefined
+      );
+      setState((current) => ({ ...current, session: updatedSession }));
+      setError("");
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Status transition rejected.");
+    }
+  }
+
   if (!loaded) {
     return <LoadingState title="Loading checkout preparation" />;
   }
@@ -125,6 +159,8 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
   }
 
   const cartViewModel = state.cart ? toCartViewModel(state.cart) : undefined;
+  const visibleOrder = readiness?.order ?? state.order;
+  const visibleSession = readiness?.session ?? state.session;
 
   return (
     <div className="grid gap-6">
@@ -174,7 +210,8 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
             </Badge>
           </div>
           <CardDescription>
-            This confirms prepared local data only. Execution is intentionally outside this phase.
+            This creates the local order and checkout session only. Execution is intentionally
+            outside this phase.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -192,11 +229,94 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
               label="Customer email"
               value={readiness?.customer.email ?? "Not collected"}
             />
-            <SummaryItem label="Prepared input" value={readiness ? "Available" : "Pending"} />
+            <SummaryItem label="Order" value={visibleOrder?.id ?? "Not created"} />
+            <SummaryItem label="Checkout session" value={visibleSession?.id ?? "Not created"} />
           </dl>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-center gap-3">
+            <CardTitle>Checkout session</CardTitle>
+            <Badge variant={visibleSession ? "info" : "neutral"}>
+              {visibleSession?.status ?? "Not created"}
+            </Badge>
+          </div>
+          <CardDescription>
+            Session state is visible and follows the neutral fake-shop lifecycle.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {visibleSession && visibleOrder ? (
+            <div className="grid gap-4">
+              <dl className="grid gap-3 text-sm md:grid-cols-3">
+                <SummaryItem label="Session id" value={visibleSession.id} />
+                <SummaryItem label="Related order" value={visibleOrder.id} />
+                <SummaryItem label="Created" value={visibleSession.createdAt} />
+                <SummaryItem label="Status" value={visibleSession.status} />
+                <SummaryItem
+                  label="Result placeholder"
+                  value={visibleSession.result?.message ?? "No result recorded"}
+                />
+                <SummaryItem
+                  label="Result time"
+                  value={visibleSession.result?.recordedAt ?? "No result recorded"}
+                />
+              </dl>
+              <div className="flex flex-wrap gap-3">
+                <StatusButton
+                  disabled={visibleSession.status !== "created"}
+                  label="Mark pending"
+                  onClick={() => handleStatusChange("pending")}
+                />
+                <StatusButton
+                  disabled={visibleSession.status !== "pending"}
+                  label="Mark succeeded"
+                  onClick={() => handleStatusChange("succeeded")}
+                />
+                <StatusButton
+                  disabled={visibleSession.status !== "pending"}
+                  label="Mark failed"
+                  onClick={() => handleStatusChange("failed")}
+                />
+                <StatusButton
+                  disabled={visibleSession.status !== "pending"}
+                  label="Mark cancelled"
+                  onClick={() => handleStatusChange("cancelled")}
+                />
+              </div>
+            </div>
+          ) : (
+            <EmptyState
+              description="Submit checkout preparation to create a local order and checkout session."
+              title="No checkout session"
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
+  );
+}
+
+function StatusButton({
+  disabled,
+  label,
+  onClick,
+}: {
+  disabled: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      className="inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
+    >
+      {label}
+    </button>
   );
 }
 
