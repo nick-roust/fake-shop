@@ -88,6 +88,23 @@ export function ShopDetails({
           </Link>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Orders</CardTitle>
+          <CardDescription>
+            Inspect orders and checkout outcomes created from this shop.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            className="inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium hover:bg-muted"
+            href={`/shops/${shop.id}/orders`}
+          >
+            Open orders
+          </Link>
+        </CardContent>
+      </Card>
     </Stack>
   );
 }

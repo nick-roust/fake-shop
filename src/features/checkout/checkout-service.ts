@@ -189,8 +189,11 @@ export function runMockCheckout(
   );
   const completedSession = repositories.checkoutSessions.save(
     transitionCheckoutSessionStatus(pendingSession, result.status, {
+      adapterId: result.diagnostics.adapterId,
+      adapterName: result.diagnostics.adapterName,
       message: result.diagnostics.message,
       recordedAt: result.diagnostics.executedAt,
+      scenario: result.diagnostics.scenario,
     })
   );
   const completedOrder = repositories.orders.save(

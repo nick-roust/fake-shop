@@ -19,6 +19,7 @@ export type Order = {
   items: OrderItem[];
   total: Money;
   status: OrderStatus;
+  createdAt: string;
 };
 
 export type CreateOrderInput = {
@@ -27,6 +28,7 @@ export type CreateOrderInput = {
   customerId: EntityId;
   items: OrderItem[];
   total: Money;
+  createdAt?: string;
   status?: OrderStatus;
 };
 
@@ -44,6 +46,7 @@ export function createOrder(input: CreateOrderInput): Order {
     customerId: requireNonEmpty(input.customerId, "Customer id"),
     items: input.items,
     total: input.total,
+    createdAt: input.createdAt ?? new Date().toISOString(),
     status: input.status ?? "created",
   };
 }

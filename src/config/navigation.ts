@@ -27,8 +27,8 @@ export const navigationItems = [
   },
   {
     label: "Orders",
-    href: "#orders",
-    description: "Future order visibility area.",
+    href: "/shops",
+    description: "Inspect orders from shop details.",
   },
   {
     label: "Integration Settings",
