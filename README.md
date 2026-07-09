@@ -18,6 +18,10 @@ It provides a small but realistic commerce flow that developers can run locally,
 
 fake-shop is not a production ecommerce platform, payment processor, banking system, accounting system, or settlement system.
 
+## Screenshots
+
+![fake-shop dashboard](docs/images/dashboard.png)
+
 ## Quick Start
 
 Prerequisites:
