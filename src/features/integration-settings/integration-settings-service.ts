@@ -1,7 +1,7 @@
 "use client";
 
 import { type Shop } from "@/domain/shop";
-import { type IntegrationConfiguration, type IntegrationMode } from "@/storage";
+import { type IntegrationConfiguration, type IntegrationMode } from "@/storage/types";
 import { getLocalDemoRepositories } from "@/storage/local-demo-boundary";
 
 export type IntegrationSettingsValues = {

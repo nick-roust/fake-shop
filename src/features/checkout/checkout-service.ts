@@ -18,14 +18,21 @@ import { createCustomer, type Customer } from "@/domain/customer";
 import { createOrder, createOrderFromCart, type Order, type OrderStatus } from "@/domain/order";
 import { type Product } from "@/domain/product";
 import { createShop, type Shop } from "@/domain/shop";
-import { mockCheckoutAdapter, type MockCheckoutScenario } from "@/integrations/checkout";
+import {
+  externalCheckoutAdapter,
+  mockCheckoutAdapter,
+  type ExternalCheckoutScenario,
+  type MockCheckoutScenario,
+} from "@/integrations/checkout";
 import { getLocalDemoRepositories } from "@/storage/local-demo-boundary";
+import { type IntegrationConfiguration } from "@/storage/types";
 
 import { type CustomerFormValues } from "./customer-form";
 
 export type CheckoutPreparation = {
   cart?: Cart;
   customer?: Customer;
+  integrationConfiguration?: IntegrationConfiguration;
   order?: Order;
   products: Product[];
   session?: CheckoutSession;
@@ -52,6 +59,19 @@ export type MockCheckoutExecution = {
   status: CheckoutSession["status"];
 };
 
+export type ExternalCheckoutExecution = {
+  adapterId: string;
+  adapterName: string;
+  configurationReady: boolean;
+  executedAt: string;
+  message: string;
+  mode: "external";
+  order: Order;
+  scenario: ExternalCheckoutScenario;
+  session: CheckoutSession;
+  status: CheckoutSession["status"];
+};
+
 export function getCheckoutPreparation(shopId: string): CheckoutPreparation {
   const repositories = getLocalDemoRepositories();
 
@@ -62,6 +82,7 @@ export function getCheckoutPreparation(shopId: string): CheckoutPreparation {
       .filter((product) => product.shopId === shopId && product.active),
     cart: findCartForShop(shopId),
     customer: repositories.customers.list().at(-1),
+    integrationConfiguration: findIntegrationConfigurationForShop(shopId),
     order: findLatestOrderForShop(shopId),
     session: findLatestCheckoutSessionForShop(shopId),
   };
@@ -212,6 +233,65 @@ export function runMockCheckout(
   };
 }
 
+export function runExternalCheckoutBoundary(session: CheckoutSession): ExternalCheckoutExecution {
+  const repositories = getLocalDemoRepositories();
+  const order = repositories.orders.getById(session.orderId);
+
+  if (!order) {
+    throw new Error("Related order is required before running external checkout boundary.");
+  }
+
+  const configuration = findIntegrationConfigurationForShop(order.shopId);
+
+  if (configuration?.mode !== "external") {
+    throw new Error("External mode must be selected before running external checkout boundary.");
+  }
+
+  const pendingSession = repositories.checkoutSessions.save(
+    transitionCheckoutSessionStatus(session, "pending", {
+      message: "External checkout boundary started.",
+      recordedAt: new Date().toISOString(),
+    })
+  );
+  const pendingOrder = repositories.orders.save(updateOrderStatus(order, "pending"));
+  const result = externalCheckoutAdapter.execute(
+    {
+      configuration: {
+        endpoint: configuration.externalBaseUrl,
+        reference: configuration.externalReference,
+      },
+      order: pendingOrder,
+      session: pendingSession,
+    },
+    "boundary-check"
+  );
+  const completedSession = repositories.checkoutSessions.save(
+    transitionCheckoutSessionStatus(pendingSession, result.status, {
+      adapterId: result.diagnostics.adapterId,
+      adapterName: result.diagnostics.adapterName,
+      message: result.diagnostics.message,
+      recordedAt: result.diagnostics.executedAt,
+      scenario: result.diagnostics.scenario,
+    })
+  );
+  const completedOrder = repositories.orders.save(
+    updateOrderStatus(pendingOrder, mapResultToOrderStatus(result.status))
+  );
+
+  return {
+    adapterId: result.diagnostics.adapterId,
+    adapterName: result.diagnostics.adapterName,
+    configurationReady: Boolean(configuration.externalBaseUrl && configuration.externalReference),
+    executedAt: result.diagnostics.executedAt,
+    message: result.diagnostics.message,
+    mode: "external",
+    order: completedOrder,
+    scenario: "boundary-check",
+    session: completedSession,
+    status: completedSession.status,
+  };
+}
+
 function getOrCreateCart(shopId: string, currency: string): Cart {
   const existingCart = findCartForShop(shopId);
 
@@ -257,6 +337,12 @@ function findLatestCheckoutSessionForShop(shopId: string): CheckoutSession | und
     .checkoutSessions.list()
     .filter((session) => session.orderId === latestOrder.id)
     .at(-1);
+}
+
+function findIntegrationConfigurationForShop(shopId: string): IntegrationConfiguration | undefined {
+  return getLocalDemoRepositories()
+    .integrationConfigurations.list()
+    .find((configuration) => configuration.shopId === shopId);
 }
 
 function saveCart(cart: Cart): Cart {

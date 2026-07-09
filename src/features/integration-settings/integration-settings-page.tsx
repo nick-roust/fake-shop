@@ -11,7 +11,7 @@ import { Grid } from "@/components/ui/layout";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { EmptyState, LoadingState } from "@/components/ui/state";
-import { type IntegrationMode } from "@/storage";
+import { type IntegrationMode } from "@/storage/types";
 
 import {
   getIntegrationSettings,

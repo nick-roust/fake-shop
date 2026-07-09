@@ -2,6 +2,7 @@ import { type CheckoutSessionStatus, type CheckoutSession } from "@/domain/check
 import { type Order } from "@/domain/order";
 
 export type CheckoutRequest = {
+  configuration?: Record<string, string | undefined>;
   order: Order;
   session: CheckoutSession;
 };

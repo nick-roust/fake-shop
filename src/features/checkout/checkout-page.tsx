@@ -12,6 +12,7 @@ import { type Customer } from "@/domain/customer";
 import { type Order } from "@/domain/order";
 import { type Product } from "@/domain/product";
 import { type Shop } from "@/domain/shop";
+import { type IntegrationConfiguration } from "@/storage/types";
 
 import { CartTable } from "./cart-table";
 import {
@@ -19,10 +20,12 @@ import {
   getCheckoutPreparation,
   prepareCheckout,
   removeCartItem,
+  runExternalCheckoutBoundary,
   runMockCheckout,
   updateCheckoutSessionStatus,
   updateCartItemQuantity,
   type CheckoutReadiness,
+  type ExternalCheckoutExecution,
   type MockCheckoutExecution,
 } from "./checkout-service";
 import { toCartViewModel } from "./checkout-view-model";
@@ -36,6 +39,7 @@ type CheckoutPageProps = {
 type CheckoutPageState = {
   cart?: Cart;
   customer?: Customer;
+  integrationConfiguration?: IntegrationConfiguration;
   order?: Order;
   products: Product[];
   session?: CheckoutSession;
@@ -45,6 +49,9 @@ type CheckoutPageState = {
 export function CheckoutPage({ shopId }: CheckoutPageProps) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
+  const [externalExecution, setExternalExecution] = useState<
+    ExternalCheckoutExecution | undefined
+  >();
   const [mockScenario, setMockScenario] = useState<MockCheckoutExecution["scenario"]>("success");
   const [mockExecution, setMockExecution] = useState<MockCheckoutExecution | undefined>();
   const [readiness, setReadiness] = useState<CheckoutReadiness | undefined>();
@@ -173,6 +180,40 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
     }
   }
 
+  function handleRunExternalCheckoutBoundary() {
+    const session = readiness?.session ?? state.session;
+
+    if (!session) {
+      setError("Create a checkout session before running external checkout boundary.");
+      return;
+    }
+
+    try {
+      const execution = runExternalCheckoutBoundary(session);
+
+      setExternalExecution(execution);
+      setReadiness((current) =>
+        current
+          ? {
+              ...current,
+              order: execution.order,
+              session: execution.session,
+            }
+          : undefined
+      );
+      setState((current) => ({
+        ...current,
+        order: execution.order,
+        session: execution.session,
+      }));
+      setError("");
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error ? caughtError.message : "External checkout boundary failed."
+      );
+    }
+  }
+
   if (!loaded) {
     return <LoadingState title="Loading checkout preparation" />;
   }
@@ -195,6 +236,11 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
   }
 
   const cartViewModel = state.cart ? toCartViewModel(state.cart) : undefined;
+  const integrationMode = state.integrationConfiguration?.mode ?? "mock";
+  const externalConfigurationReady = Boolean(
+    state.integrationConfiguration?.externalBaseUrl &&
+    state.integrationConfiguration?.externalReference
+  );
   const visibleOrder = readiness?.order ?? state.order;
   const visibleSession = readiness?.session ?? state.session;
 
@@ -216,6 +262,33 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
       </div>
 
       {error ? <Alert variant="danger">{error}</Alert> : null}
+
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-center gap-3">
+            <CardTitle>Adapter selection</CardTitle>
+            <Badge variant={integrationMode === "mock" ? "success" : "info"}>
+              {integrationMode}
+            </Badge>
+          </div>
+          <CardDescription>
+            Checkout execution uses the configured shop mode through the adapter boundary.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid gap-3 text-sm md:grid-cols-3">
+            <SummaryItem label="Selected mode" value={integrationMode} />
+            <SummaryItem
+              label="Configuration"
+              value={externalConfigurationReady || integrationMode === "mock" ? "Ready" : "Missing"}
+            />
+            <SummaryItem
+              label="External reference"
+              value={state.integrationConfiguration?.externalReference ?? "Not configured"}
+            />
+          </dl>
+        </CardContent>
+      </Card>
 
       <ProductSelection onAddProduct={handleAddProduct} products={state.products} />
 
@@ -391,6 +464,55 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
           )}
         </CardContent>
       </Card>
+
+      {integrationMode === "external" ? (
+        <Card>
+          <CardHeader>
+            <div className="flex flex-wrap items-center gap-3">
+              <CardTitle>External checkout boundary</CardTitle>
+              <Badge variant={externalExecution ? "warning" : "neutral"}>
+                {externalExecution?.adapterName ?? "Not run"}
+              </Badge>
+            </div>
+            <CardDescription>
+              Prepare the external adapter path and normalize the local boundary result without a
+              network call.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {visibleSession ? (
+              <div className="grid gap-4">
+                <button
+                  className="inline-flex h-10 w-fit items-center justify-center rounded-md border border-border px-4 text-sm font-medium hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+                  disabled={visibleSession.status !== "created"}
+                  onClick={handleRunExternalCheckoutBoundary}
+                  type="button"
+                >
+                  Prepare external boundary
+                </button>
+                {externalExecution ? (
+                  <dl className="grid gap-3 text-sm md:grid-cols-3">
+                    <SummaryItem label="Selected adapter" value={externalExecution.adapterName} />
+                    <SummaryItem label="Mode" value={externalExecution.mode} />
+                    <SummaryItem label="Scenario" value={externalExecution.scenario} />
+                    <SummaryItem label="Result" value={externalExecution.status} />
+                    <SummaryItem
+                      label="Configuration"
+                      value={externalExecution.configurationReady ? "Ready" : "Missing"}
+                    />
+                    <SummaryItem label="Diagnostics" value={externalExecution.message} />
+                  </dl>
+                ) : null}
+              </div>
+            ) : (
+              <EmptyState
+                description="Submit checkout preparation before preparing external checkout."
+                title="No checkout session"
+              />
+            )}
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }
