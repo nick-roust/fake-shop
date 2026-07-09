@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Independent open-source reference commerce application for local demos and checkout integration experiments.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "packageManager": "pnpm@11.0.9",
   "engines": {
     "node": ">=20.0.0",
