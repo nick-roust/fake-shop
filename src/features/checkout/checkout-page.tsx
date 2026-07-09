@@ -19,9 +19,11 @@ import {
   getCheckoutPreparation,
   prepareCheckout,
   removeCartItem,
+  runMockCheckout,
   updateCheckoutSessionStatus,
   updateCartItemQuantity,
   type CheckoutReadiness,
+  type MockCheckoutExecution,
 } from "./checkout-service";
 import { toCartViewModel } from "./checkout-view-model";
 import { CustomerForm, type CustomerFormValues } from "./customer-form";
@@ -43,6 +45,8 @@ type CheckoutPageState = {
 export function CheckoutPage({ shopId }: CheckoutPageProps) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
+  const [mockScenario, setMockScenario] = useState<MockCheckoutExecution["scenario"]>("success");
+  const [mockExecution, setMockExecution] = useState<MockCheckoutExecution | undefined>();
   const [readiness, setReadiness] = useState<CheckoutReadiness | undefined>();
   const [state, setState] = useState<CheckoutPageState>({
     products: [],
@@ -134,6 +138,38 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
       setError("");
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Status transition rejected.");
+    }
+  }
+
+  function handleRunMockCheckout() {
+    const session = readiness?.session ?? state.session;
+
+    if (!session) {
+      setError("Create a checkout session before running mock checkout.");
+      return;
+    }
+
+    try {
+      const execution = runMockCheckout(session, mockScenario);
+
+      setMockExecution(execution);
+      setReadiness((current) =>
+        current
+          ? {
+              ...current,
+              order: execution.order,
+              session: execution.session,
+            }
+          : undefined
+      );
+      setState((current) => ({
+        ...current,
+        order: execution.order,
+        session: execution.session,
+      }));
+      setError("");
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Mock checkout failed.");
     }
   }
 
@@ -290,6 +326,66 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
           ) : (
             <EmptyState
               description="Submit checkout preparation to create a local order and checkout session."
+              title="No checkout session"
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-center gap-3">
+            <CardTitle>Mock checkout adapter</CardTitle>
+            <Badge variant={mockExecution ? "success" : "neutral"}>
+              {mockExecution?.adapterName ?? "Not run"}
+            </Badge>
+          </div>
+          <CardDescription>
+            Run a local adapter scenario and map the normalized result into checkout session state.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {visibleSession ? (
+            <div className="grid gap-4">
+              <div className="grid gap-2 sm:max-w-xs">
+                <label className="text-sm font-medium" htmlFor="mock-checkout-scenario">
+                  Mock scenario
+                </label>
+                <select
+                  className="h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground shadow-sm"
+                  id="mock-checkout-scenario"
+                  onChange={(event) =>
+                    setMockScenario(event.target.value as MockCheckoutExecution["scenario"])
+                  }
+                  value={mockScenario}
+                >
+                  <option value="success">Success</option>
+                  <option value="failure">Failure</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+              <button
+                className="inline-flex h-10 w-fit items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+                disabled={visibleSession.status !== "created"}
+                onClick={handleRunMockCheckout}
+                type="button"
+              >
+                Run mock checkout
+              </button>
+              {mockExecution ? (
+                <dl className="grid gap-3 text-sm md:grid-cols-3">
+                  <SummaryItem label="Selected adapter" value={mockExecution.adapterName} />
+                  <SummaryItem label="Scenario" value={mockExecution.scenario} />
+                  <SummaryItem label="Result" value={mockExecution.status} />
+                  <SummaryItem label="Executed" value={mockExecution.executedAt} />
+                  <SummaryItem label="Diagnostics" value={mockExecution.message} />
+                  <SummaryItem label="Adapter id" value={mockExecution.adapterId} />
+                </dl>
+              ) : null}
+            </div>
+          ) : (
+            <EmptyState
+              description="Submit checkout preparation before running mock checkout."
               title="No checkout session"
             />
           )}
