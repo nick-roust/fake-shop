@@ -131,7 +131,7 @@ export function ShopForm({ initialShop, onCancel, onSubmit, submitLabel }: ShopF
             placeholder="Example: emerald"
             value={accentColor}
           />
-          <FieldDescription>Optional display setting for future shop surfaces.</FieldDescription>
+          <FieldDescription>Optional display setting for shop surfaces.</FieldDescription>
         </Field>
       </FieldGroup>
 

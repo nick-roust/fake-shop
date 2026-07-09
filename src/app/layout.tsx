@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "fake-shop",
-  description: "Open-source reference commerce application foundation.",
+  description: "Open-source reference commerce application for local demos.",
 };
 
 export default function RootLayout({

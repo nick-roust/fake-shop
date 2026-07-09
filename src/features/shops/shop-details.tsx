@@ -75,9 +75,7 @@ export function ShopDetails({
       <Card>
         <CardHeader>
           <CardTitle>Products</CardTitle>
-          <CardDescription>
-            Manage demo products that belong to this shop before future cart and checkout phases.
-          </CardDescription>
+          <CardDescription>Manage demo products that belong to this shop.</CardDescription>
         </CardHeader>
         <CardContent>
           <Link
@@ -110,7 +108,7 @@ export function ShopDetails({
         <CardHeader>
           <CardTitle>Integration settings</CardTitle>
           <CardDescription>
-            Configure checkout mode for this shop without executing external behavior.
+            Configure checkout mode and adapter settings for this shop.
           </CardDescription>
         </CardHeader>
         <CardContent>

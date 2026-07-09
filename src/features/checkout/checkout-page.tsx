@@ -365,7 +365,7 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
                 <SummaryItem label="Created" value={visibleSession.createdAt} />
                 <SummaryItem label="Status" value={visibleSession.status} />
                 <SummaryItem
-                  label="Result placeholder"
+                  label="Result"
                   value={visibleSession.result?.message ?? "No result recorded"}
                 />
                 <SummaryItem

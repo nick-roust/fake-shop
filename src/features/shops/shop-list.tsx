@@ -24,7 +24,7 @@ export function ShopList({ shops }: ShopListProps) {
   if (shops.length === 0) {
     return (
       <EmptyState
-        description="Create a fake shop to prepare the first storefront for future catalog and checkout flows."
+        description="Create a fake shop to prepare catalog, checkout, and order flows."
         title="No shops available"
       />
     );
