@@ -6,22 +6,17 @@ Define the domain documentation area for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
-## Description
+## Domain Overview
 
-This document will link domain model and checkout model documentation for shared commerce vocabulary and relationships.
+The fake-shop domain uses public commerce vocabulary: shop, product, category, customer, cart, order, checkout session, and integration configuration.
 
-## Placeholder Sections
+## Domain Documents
 
-### Domain Overview
+- [Domain Model](DOMAIN-MODEL.md)
+- [Checkout Model](CHECKOUT-MODEL.md)
 
-Planned.
+## Vocabulary Rules
 
-### Domain Documents
-
-Planned.
-
-### Vocabulary Rules
-
-Planned.
+New domain concepts must have clear ownership and must not introduce provider-specific behavior into the core domain.

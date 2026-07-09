@@ -2,20 +2,15 @@
 
 ## Purpose
 
-Describe the planned testing strategy for fake-shop.
+Describe the testing strategy for fake-shop.
 
 ## Status
 
 Active foundation.
 
-## Description
-
-This document defines the current testing philosophy, test boundaries, and validation approach.
-
 ## Testing Philosophy
 
-Tests protect existing fake-shop behavior and architectural boundaries before additional v0.1 work
-continues.
+Tests protect existing fake-shop behavior and architecture boundaries before additional v0.1 work continues.
 
 The foundation emphasizes:
 
@@ -34,10 +29,9 @@ Test groups:
 - End-to-end tests cover the main user journey through public application services.
 - Smoke tests cover developer demo state and reproducible mock checkout behavior.
 
-Tests must not introduce provider-specific assumptions, production infrastructure, or private
-runtime concepts.
+Tests must not introduce provider-specific assumptions, production infrastructure, or unavailable runtime concepts.
 
-## Validation Approach
+## Test Commands
 
 Run all tests:
 
@@ -54,10 +48,18 @@ pnpm run test:e2e
 pnpm run test:smoke
 ```
 
+## Validation Approach
+
 Run full local validation:
 
 ```bash
 pnpm run check
 pnpm run test
 pnpm run build
+```
+
+Run route smoke validation while the application is running:
+
+```bash
+pnpm run smoke:routes
 ```

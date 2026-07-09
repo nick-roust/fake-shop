@@ -2,15 +2,11 @@
 
 ## Purpose
 
-Describe planned smoke test documentation for fake-shop.
+Describe smoke test flows for fake-shop.
 
 ## Status
 
 Active foundation.
-
-## Description
-
-This document defines the current foundation smoke checks used for local demo validation.
 
 ## Reproducible Demo Flows
 
@@ -26,12 +22,17 @@ Open:
 http://localhost:3000/developer
 ```
 
-Load sample data and inspect the sample shop, products, checkout preparation, orders, and
-integration settings routes.
+Load sample data and inspect:
 
-## CI Validation
+- sample shop;
+- products;
+- checkout preparation;
+- orders;
+- integration settings.
 
-Run static validation:
+## Smoke Commands
+
+Run static demo foundation validation:
 
 ```bash
 pnpm run demo:check
@@ -49,7 +50,7 @@ Run route smoke validation while the application is running:
 pnpm run smoke:routes
 ```
 
-The smoke checks use only public local routes and do not depend on external services.
+The route smoke command uses only public local routes and does not depend on external services.
 
 ## Smoke Test Results
 

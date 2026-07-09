@@ -6,22 +6,16 @@ Define the product documentation area for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
-## Description
+## Product Scope
 
-This document will link product requirements, user goals, product boundaries, user flows, and roadmap-oriented product materials.
+fake-shop v0.1 focuses on local-first reference commerce behavior: shops, products, cart preparation, customer information, checkout sessions, mock checkout, integration settings, and order inspection.
 
-## Placeholder Sections
+## Product Documents
 
-### Product Scope
+- [FAKE-SHOP PRODUCT REQUIREMENTS v0.1](FAKE-SHOP-PRODUCT-REQUIREMENTS-v0.1.md)
 
-Planned.
+## Product Change Rules
 
-### Product Documents
-
-Planned.
-
-### Product Change Rules
-
-Planned.
+Product scope changes should be documented before implementation changes are added.

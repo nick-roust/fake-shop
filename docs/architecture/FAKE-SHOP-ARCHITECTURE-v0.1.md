@@ -2,7 +2,7 @@
 
 ## 1. Architecture Purpose
 
-fake-shop is an independent open-source commerce reference application. Its architecture exists to support local demos, checkout experiments, and contribution by developers who do not have private system knowledge.
+fake-shop is an independent open-source commerce reference application. Its architecture exists to support local demos, checkout experiments, and contribution by developers who do not have unavailable system knowledge.
 
 The application must be local-first. A developer should be able to clone the repository, start the app, create sample commerce data, complete mock checkout, and inspect order state without connecting to any external service.
 
@@ -138,7 +138,7 @@ Responsibilities:
 - keep products available during a local demo session;
 - keep orders and checkout sessions inspectable;
 - support reset or reseed behavior for demos;
-- avoid hidden dependencies on private data.
+- avoid hidden dependencies on unavailable data.
 
 v0.1 architecture does not require a specific database. The implementation may choose simple local storage, file-backed storage, an embedded database, or another lightweight option if it preserves the local-first product goal.
 
@@ -154,7 +154,7 @@ Responsibilities:
 - provide default local configuration;
 - validate required external integration settings only when external mode is selected;
 - expose clear setup errors;
-- avoid private hostnames, private identifiers, and private workspace assumptions.
+- avoid unavailable hostnames, unavailable identifiers, and workspace-specific assumptions.
 
 Configuration must be minimal. Mock mode must start without user-provided secrets or external URLs.
 
@@ -444,7 +444,7 @@ Smoke tooling should follow public developer flows:
 - run mock checkout;
 - inspect the result.
 
-Tests must not depend on private services.
+Tests must not depend on unavailable services.
 
 ## 11. Non-Goals
 
@@ -460,7 +460,7 @@ The architecture does not include:
 - detailed API schemas;
 - database migrations;
 - provider-specific checkout ownership;
-- private infrastructure dependency.
+- unavailable infrastructure dependency.
 
 ## 12. Architecture Acceptance Criteria
 
@@ -472,7 +472,7 @@ The v0.1 architecture is acceptable when:
 - external services can be replaced without redesigning the core app;
 - UI screens map to product requirements;
 - configuration is public and minimal;
-- no private system concepts appear in the architecture;
+- no unavailable system concepts appear in the architecture;
 - implementation teams can start building without copying the legacy architecture.
 
 ARCHITECTURE COMPLETE

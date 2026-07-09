@@ -293,7 +293,7 @@ Purpose:
 Rules:
 
 - public configuration;
-- no private assumptions;
+- no unavailable assumptions;
 - secrets handled server-side.
 
 Additional rules:
@@ -348,7 +348,7 @@ Rules:
 
 - tests should protect public product behavior;
 - tests should validate mock checkout by default;
-- tests should not require private services;
+- tests should not require unavailable services;
 - tests should confirm adapter boundaries remain isolated.
 
 ## 10. Scripts Structure
@@ -364,7 +364,7 @@ Purpose:
 Rules:
 
 - scripts must use public flows;
-- scripts must not encode private services.
+- scripts must not encode unavailable services.
 
 Additional rules:
 

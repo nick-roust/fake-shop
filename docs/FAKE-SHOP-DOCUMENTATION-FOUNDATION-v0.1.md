@@ -11,7 +11,7 @@ Documentation exists so that:
 - product decisions are visible before implementation;
 - architecture decisions are explicit before code is added;
 - implementation follows documented boundaries;
-- contributors can understand the project without private context;
+- contributors can understand the project without unavailable project context;
 - public terminology remains consistent;
 - future changes can be evaluated against clear requirements.
 
@@ -57,7 +57,7 @@ Preferred terms:
 - webhook;
 - status.
 
-Documentation must not rely on private service names, private workspace assumptions, private identifiers, or unavailable project knowledge.
+Documentation must not rely on unavailable service names, workspace-specific assumptions, unavailable identifiers, or unavailable project knowledge.
 
 ### Architecture Changes Require Documentation Updates
 
@@ -323,7 +323,7 @@ Expected lifecycle:
 
 1. Product intent is documented.
 2. Architecture boundaries are documented.
-3. Implementation work is planned from documented boundaries.
+3. Implementation work starts from documented boundaries.
 4. Implementation is built.
 5. Guides and reference docs are updated.
 6. Tests and smoke flows are documented.
@@ -355,10 +355,10 @@ Historical documents should remain available when they explain project direction
 All documentation must:
 
 - be written in English;
-- avoid private infrastructure references;
+- avoid unavailable infrastructure references;
 - use public commerce terminology;
 - be understandable without project history.
 
-Documentation should be written for external developers, integration engineers, and open-source contributors. It must not assume private workspace access, private service knowledge, private identifiers, or one specific checkout provider.
+Documentation should be written for external developers, integration engineers, and open-source contributors. It must not assume workspace-specific access, unavailable service knowledge, unavailable identifiers, or one specific checkout provider.
 
 DOCUMENTATION FOUNDATION COMPLETE

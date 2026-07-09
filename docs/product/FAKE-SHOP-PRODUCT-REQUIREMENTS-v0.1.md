@@ -4,7 +4,7 @@
 
 fake-shop is an independent open-source reference commerce application for demonstrating and testing checkout flows.
 
-It exists to give developers a realistic but non-production shop they can run locally, inspect, modify, and connect to checkout backends. The project should make common commerce flows understandable without requiring private platform knowledge, private infrastructure, or production ecommerce setup.
+It exists to give developers a realistic but non-production shop they can run locally, inspect, modify, and connect to checkout backends. The project should make common commerce flows understandable without requiring unavailable platform knowledge, external infrastructure, or production ecommerce setup.
 
 fake-shop is a reference application, not a payment processor or full commerce platform. Its purpose is to model enough shop, product, cart, order, and checkout behavior to support demos, integration experiments, and local development.
 
@@ -58,9 +58,9 @@ They need:
 
 - public terminology;
 - clear project boundaries;
-- no private infrastructure dependency;
+- no external infrastructure dependency;
 - a stable product direction;
-- contribution areas that do not require private context.
+- contribution areas that do not require unavailable project context.
 
 ## 4. Product Scope
 
@@ -77,7 +77,7 @@ Required capabilities:
 - configure shop-specific checkout behavior;
 - select an integration mode for a shop.
 
-Shop-specific checkout configuration should be understandable as public product behavior. It should not depend on private identifiers, private seed data, or hidden service assumptions.
+Shop-specific checkout configuration should be understandable as public product behavior. It should not depend on unavailable identifiers, unavailable seed data, or hidden service assumptions.
 
 Integration mode selection must include at least:
 
@@ -171,7 +171,7 @@ External API mode requirements:
 - optional for local demo usage;
 - able to submit checkout data to an external backend;
 - able to surface external response information in a developer-friendly way;
-- must not require private infrastructure.
+- must not require external infrastructure.
 
 ## 5. User Flows
 
@@ -284,7 +284,7 @@ fake-shop configuration must be public, minimal, and understandable.
 Configuration principles:
 
 - minimal environment variables;
-- no private infrastructure dependency;
+- no external infrastructure dependency;
 - mock mode available by default;
 - external API mode is optional;
 - configuration names must use public terminology;
@@ -293,7 +293,7 @@ Configuration principles:
 
 The project should provide an example configuration file for public use. It should clearly distinguish default local behavior from optional external integration settings.
 
-No v0.1 configuration may require private hostnames, private service identifiers, private seed data, or private workspace paths.
+No v0.1 configuration may require unavailable hostnames, unavailable service identifiers, unavailable seed data, or workspace-specific paths.
 
 ## 8. Non Goals
 
@@ -332,12 +332,12 @@ v0.1 is complete when a developer can:
 
 The completed v0.1 should also satisfy these product criteria:
 
-- the app is understandable without private platform knowledge;
+- the app is understandable without unavailable platform knowledge;
 - mock mode works without external services;
 - public documentation explains setup and configuration;
 - the adapter boundary is visible in product behavior;
 - order and checkout session status can be inspected from the UI;
-- no private system concepts or dependencies appear in the product surface.
+- no unavailable system concepts or dependencies appear in the product surface.
 
 ## 10. Future Extensions
 

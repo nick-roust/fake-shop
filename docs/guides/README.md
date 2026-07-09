@@ -6,22 +6,19 @@ Define the user and developer guide documentation area for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
-## Description
+## Guide Overview
 
-This document will link task-oriented guides for setup, local demos, development, configuration, and integration usage.
+These guides explain how to run, configure, validate, and extend fake-shop.
 
-## Placeholder Sections
+## Guide List
 
-### Guide Overview
+- [Getting Started](GETTING-STARTED.md)
+- [Development Guide](DEVELOPMENT.md)
+- [Configuration Guide](CONFIGURATION.md)
+- [Integration Guide](INTEGRATION-GUIDE.md)
 
-Planned.
+## Guide Standards
 
-### Guide List
-
-Planned.
-
-### Guide Standards
-
-Planned.
+Guides must use public terminology, match implemented commands, and avoid external infrastructure requirements for the default local demo path.

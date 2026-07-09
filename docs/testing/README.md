@@ -8,14 +8,9 @@ Define the testing documentation area for fake-shop.
 
 Active foundation.
 
-## Description
-
-This document links testing strategy, smoke tests, and validation guidance for fake-shop behavior.
-
 ## Testing Overview
 
-fake-shop uses a local testing foundation built on the Node.js test runner and TypeScript
-transpilation for project source files.
+fake-shop uses a local testing foundation built on the Node.js test runner and TypeScript transpilation for project source files.
 
 Tests are grouped by responsibility:
 
@@ -26,12 +21,9 @@ Tests are grouped by responsibility:
 
 ## Testing Documents
 
-Primary testing documents:
-
-- `docs/testing/TESTING-STRATEGY.md`
-- `docs/testing/SMOKE-TESTS.md`
+- [Testing Strategy](TESTING-STRATEGY.md)
+- [Smoke Tests](SMOKE-TESTS.md)
 
 ## Validation Boundaries
 
-Tests should protect public project behavior and architecture boundaries. They should not depend on
-external services, private infrastructure, or provider-specific behavior.
+Tests should protect public project behavior and architecture boundaries. They should not depend on external services, unavailable infrastructure, or provider-specific behavior.

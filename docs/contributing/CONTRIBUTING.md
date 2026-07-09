@@ -2,26 +2,41 @@
 
 ## Purpose
 
-Describe planned contribution rules for fake-shop.
+Describe contribution rules for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
-## Description
+## Contribution Rules
 
-This document will define contribution rules, code standards, and documentation standards for public contributors.
+- Keep changes small and bounded.
+- Preserve documented product and architecture boundaries.
+- Do not introduce external service requirements into the default local demo path.
+- Do not introduce provider-specific concepts into the domain model.
+- Update documentation when behavior, commands, configuration, or project structure changes.
 
-## Placeholder Sections
+## Code Standards
 
-### Contribution Rules
+- Use TypeScript and existing project conventions.
+- Keep domain logic independent from UI, storage drivers, and integrations.
+- Access local state through repository and storage boundaries.
+- Keep adapter diagnostics separate from domain status.
+- Run validation before submitting changes.
 
-Planned.
+## Documentation Standards
 
-### Code Standards
+- Write documentation in English.
+- Use public commerce terminology.
+- Avoid unavailable infrastructure references and workspace-specific assumptions.
+- Keep historical planning documents clearly separated from current implementation guidance.
 
-Planned.
+## Validation
 
-### Documentation Standards
+Run:
 
-Planned.
+```bash
+pnpm run check
+pnpm run test
+pnpm run build
+```

@@ -6,22 +6,22 @@ Define the contribution documentation area for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
-## Description
+## Contribution Overview
 
-This document will link contribution rules, documentation standards, and project workflow guidance.
+Contributions should preserve the documented product scope, architecture boundaries, and provider-neutral checkout model.
 
-## Placeholder Sections
+## Contribution Documents
 
-### Contribution Overview
+- [Contributing](CONTRIBUTING.md)
 
-Planned.
+## Standards
 
-### Contribution Documents
+Run validation before opening a change:
 
-Planned.
-
-### Standards
-
-Planned.
+```bash
+pnpm run check
+pnpm run test
+pnpm run build
+```

@@ -6,22 +6,36 @@ Provide the entry point for fake-shop project documentation.
 
 ## Status
 
-Planned.
+Active foundation.
 
-## Description
+## Project Overview
 
-This document will introduce the documentation set, link to the main project references, and explain where to find product, architecture, guide, testing, and contribution materials.
+fake-shop is an independent open-source reference commerce application. It supports local demo usage, mock checkout flows, and external checkout adapter experiments through a provider-neutral architecture.
 
-## Placeholder Sections
+The project is designed for developers, integration engineers, and open-source contributors who need a small commerce application that can run without external infrastructure.
 
-### Project Overview
+## Documentation Map
 
-Planned.
+- [Product Requirements](product/FAKE-SHOP-PRODUCT-REQUIREMENTS-v0.1.md)
+- [Architecture](architecture/FAKE-SHOP-ARCHITECTURE-v0.1.md)
+- [Project Structure](architecture/PROJECT-STRUCTURE.md)
+- [Domain Model](domain/DOMAIN-MODEL.md)
+- [Checkout Model](domain/CHECKOUT-MODEL.md)
+- [Getting Started](guides/GETTING-STARTED.md)
+- [Development Guide](guides/DEVELOPMENT.md)
+- [Configuration Guide](guides/CONFIGURATION.md)
+- [Integration Guide](guides/INTEGRATION-GUIDE.md)
+- [Testing Strategy](testing/TESTING-STRATEGY.md)
+- [Smoke Tests](testing/SMOKE-TESTS.md)
+- [Contributing](contributing/CONTRIBUTING.md)
 
-### Documentation Map
+## Historical Context
 
-Planned.
+Legacy audit documents are retained in `docs/audit/` as historical planning context. They are not current architecture and should not be treated as implementation guidance.
 
-### Quick Links
+## Quick Links
 
-Planned.
+- Run locally: `pnpm run dev`
+- Validate code and docs: `pnpm run check`
+- Run tests: `pnpm run test`
+- Load demo data: open `/developer` in the running application.

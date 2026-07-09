@@ -6,22 +6,17 @@ Define the architecture documentation area for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
-## Description
+## Architecture Overview
 
-This document will link architecture references, ownership boundaries, structural decisions, and future architecture decision records.
+fake-shop uses a local-first, provider-neutral architecture. Domain concepts are separated from integrations, storage is replaceable, and checkout adapters live at the integration boundary.
 
-## Placeholder Sections
+## Architecture Documents
 
-### Architecture Overview
+- [FAKE-SHOP ARCHITECTURE v0.1](FAKE-SHOP-ARCHITECTURE-v0.1.md)
+- [Project Structure](PROJECT-STRUCTURE.md)
 
-Planned.
+## Architecture Change Rules
 
-### Architecture Documents
-
-Planned.
-
-### Architecture Change Rules
-
-Planned.
+Architecture changes should update documentation in the same change set.
