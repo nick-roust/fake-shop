@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useSyncExternalStore } from "react";
-import { Button } from "@/components/ui/button";
 
 type Theme = "light" | "dark";
 
@@ -49,16 +48,15 @@ export function ThemeSwitcher() {
   }
 
   return (
-    <Button
+    <button
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-      className="size-10 px-0"
+      className="inline-flex size-10 items-center justify-center rounded-md bg-transparent text-foreground transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       onClick={toggleTheme}
       title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
       type="button"
-      variant="outline"
     >
       {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-    </Button>
+    </button>
   );
 }
 
@@ -66,7 +64,7 @@ function MoonIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="size-4"
+      className="size-5"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
@@ -83,7 +81,7 @@ function SunIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="size-4"
+      className="size-5"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
