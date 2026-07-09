@@ -1,0 +1,8 @@
+node_modules/
+dist/
+build/
+out/
+.next/
+coverage/
+fake-shop-old/
+pnpm-lock.yaml

@@ -1,0 +1,438 @@
+# Legacy Decision Matrix
+
+## Purpose
+
+This document decides what should carry forward from `fake-shop-old` into the new `fake-shop` project.
+
+Target direction: an independent open-source consumer fake shop for demos, testing, local development, and payment/checkout integration experiments. The new project should be understandable without private platform context, runnable by external users, and designed around generic commerce concepts.
+
+## Decision Summary
+
+The legacy project should not be migrated as architecture. It should be used as evidence for a smaller, cleaner product direction:
+
+- Keep the concept of a realistic fake storefront.
+- Keep editable checkout/order fixtures.
+- Keep success and failure result pages.
+- Rebuild API integration around generic adapter boundaries.
+- Discard private service names, private env contracts, legacy smoke scripts, and local-only assumptions.
+
+## 1. Reusable Concepts
+
+### Manual Test Storefront
+
+Reusable:
+
+- A browser-based storefront for manually creating test orders.
+- Pre-filled buyer and order data that can be edited before checkout.
+- Itemized cart/order lines with quantity, unit price, and computed total.
+- Multiple sample shops or scenarios to exercise different order shapes.
+
+Why it belongs:
+
+- It is useful to any developer testing checkout behavior.
+- It demonstrates practical flows better than raw API examples.
+- It supports local demos without requiring real commerce inventory.
+
+Target shape:
+
+- Present as a fake consumer shop, not an internal validation console.
+- Use generic sample store profiles such as home goods, digital goods, subscriptions, and B2B invoice examples.
+- Make fixtures transparent and editable.
+
+### Order Lifecycle Pages
+
+Reusable:
+
+- Dedicated success page.
+- Dedicated failure/cancel page.
+- Visible order identifier and payment attempt/status fields when available.
+- Clear way to return to the storefront.
+
+Why it belongs:
+
+- Most checkout integrations need redirect targets.
+- These pages are simple, portable, and useful for testing external payment providers.
+
+Target shape:
+
+- Use provider-neutral result names.
+- Show query params and status payloads in a developer-friendly way.
+- Avoid assuming one backend response format.
+
+### Form-To-Checkout Payload Construction
+
+Reusable:
+
+- Taking user-entered form data and converting it into a structured checkout/order request.
+- Supporting both browser redirect flows and JSON/API test flows.
+- Keeping item totals explicit and visible.
+
+Why it belongs:
+
+- This is the core bridge between a fake storefront and any checkout backend.
+
+Target shape:
+
+- Define a generic internal order model first.
+- Add provider adapters separately.
+- Validate input before submitting.
+- Keep money handling explicit and predictable.
+
+### Smoke/Demo Scripts
+
+Reusable:
+
+- A scriptable path for creating a sample order without using the browser.
+- JSON output suitable for CI or local smoke verification.
+
+Why it belongs:
+
+- Open-source consumers need a fast way to verify setup.
+- Scripts make examples reproducible.
+
+Target shape:
+
+- Use generic names such as `smoke:create-order`.
+- Avoid hard-coded private IDs.
+- Fail with actionable setup errors.
+- Keep scripts aligned with public documentation.
+
+### Minimal Environment Example
+
+Reusable:
+
+- A committed example env file showing required configuration.
+- Local defaults for a demo backend when available.
+
+Why it belongs:
+
+- External users need immediate setup guidance.
+
+Target shape:
+
+- Use generic env names such as `CHECKOUT_API_URL`, `FAKE_SHOP_PUBLIC_URL`, and provider-specific variables under adapter-specific prefixes.
+- Document required versus optional values.
+- Never require private seed data.
+
+## 2. Discarded Concepts
+
+### Private Platform Authority
+
+Discard:
+
+- Any rule that makes the fake shop subordinate to a private runtime, registry, or internal service.
+- Any assumption that external users know private workspace paths or governance docs.
+
+Reason:
+
+- The new fake-shop must stand alone as an open-source project.
+
+Replacement:
+
+- Public project principles: local-first, adapter-based, provider-neutral, demo-friendly.
+
+### Legacy Proxy Path
+
+Discard:
+
+- Old proxy-era flow descriptions.
+- Legacy proxy URL env variables.
+- Scripts that target missing packages.
+- UI copy that describes an implementation path that no longer exists.
+
+Reason:
+
+- The audit found these artifacts stale and misleading.
+
+Replacement:
+
+- Generic checkout backend integration boundary.
+- Optional adapters can be added later, but the base app should not encode historical paths.
+
+### Private Identifiers And Seed Assumptions
+
+Discard:
+
+- Hard-coded public connection IDs.
+- Assumptions that a local private database has been seeded.
+- Response assertions tied to private status names.
+
+Reason:
+
+- These make the project unusable outside the original local environment.
+
+Replacement:
+
+- Public sample IDs generated by the app.
+- User-provided adapter credentials where needed.
+- Generic status model: `created`, `pending`, `succeeded`, `failed`, `cancelled`.
+
+### Internal Terminology
+
+Discard:
+
+- Private service names and internal lifecycle terms.
+- Governance language from the legacy repo.
+- Documentation that describes internal validation systems instead of user-facing fake-shop behavior.
+
+Reason:
+
+- The new project should be understandable to open-source consumers and payment-integration developers.
+
+Replacement:
+
+- Use plain commerce and integration vocabulary: shop, cart, checkout, order, customer, payment method, redirect, webhook, status.
+
+### Generated And Runtime Artifacts
+
+Discard:
+
+- Existing `.next` output.
+- Existing `node_modules`.
+- Historical logs.
+- Local `.env.local` values.
+- Default create-next-app README content.
+
+Reason:
+
+- These are not source decisions and should not shape the new project.
+
+Replacement:
+
+- Clean source tree, documented setup, reproducible scripts.
+
+## 3. Rebuilt Concepts
+
+### Project Boundary
+
+Rebuild:
+
+- From private validation harness to independent fake commerce application.
+
+Target:
+
+- A small open-source fake shop that developers can run locally to test checkout integrations.
+- The app owns only fake-shop behavior: storefront fixtures, cart/order creation, redirect pages, and adapter calls.
+- External payment or checkout systems remain replaceable integrations.
+
+### Data Model
+
+Rebuild:
+
+- Legacy implicit form fields and private payload shape.
+
+Target model:
+
+- `Shop`: id, name, description, category, supported checkout scenarios.
+- `Customer`: name, email, phone, country, address fields.
+- `CartItem`: id, name, quantity, unit amount, currency, optional metadata.
+- `Order`: id, customer, items, amount total, currency, status, timestamps.
+- `CheckoutSession`: id, order id, provider, redirect URL, status, raw provider response.
+
+The internal model should be provider-neutral. Adapter-specific payloads should be derived from it.
+
+### Checkout Adapter Boundary
+
+Rebuild:
+
+- Legacy direct POST to one local service.
+
+Target:
+
+- A generic adapter interface that can create a checkout session from an internal order.
+- A default mock adapter for zero-config local use.
+- Optional real adapters configured explicitly by users.
+
+The new project should not require any private backend to demonstrate its core flow.
+
+### Configuration
+
+Rebuild:
+
+- Legacy env names and local port assumptions.
+
+Target:
+
+- Clear env contract for public use.
+- Required env should be minimal.
+- Zero-config mock mode should work out of the box.
+- Provider-specific configuration should be optional and namespaced.
+
+Example boundary:
+
+- Base app URL.
+- Adapter mode.
+- Optional checkout API URL.
+- Optional adapter credentials.
+
+### UI
+
+Rebuild:
+
+- Legacy internal validation dashboard presentation.
+
+Target:
+
+- First screen should feel like a usable fake consumer shop.
+- Keep developer controls available, but frame them as scenario controls or test checkout options.
+- Avoid stale implementation diagrams in the primary flow.
+
+### Scripts And Tests
+
+Rebuild:
+
+- Legacy scenario matrices tied to missing packages and private response names.
+
+Target:
+
+- Public smoke scripts:
+  - start app
+  - create mock checkout
+  - exercise success redirect
+  - exercise failure/cancel redirect
+- Tests should assert fake-shop behavior and adapter contracts, not private backend semantics.
+
+## 4. Migration Risks
+
+### Accidental Private Coupling
+
+Risk:
+
+- Carrying over private service names, env variables, status fields, or identifiers would make the open-source project confusing and brittle.
+
+Mitigation:
+
+- Treat legacy payloads as examples only.
+- Define public fake-shop models before implementing adapters.
+
+### Architecture Copying
+
+Risk:
+
+- Copying the legacy app structure would preserve a private validation harness instead of creating a consumer fake shop.
+
+Mitigation:
+
+- Rebuild the product boundary and documentation first.
+- Keep only concepts that serve public users.
+
+### Documentation Drift
+
+Risk:
+
+- The legacy repo already has stale README content and UI copy. Carrying it forward would mislead users.
+
+Mitigation:
+
+- Write new docs around public installation, local demo mode, adapter configuration, and checkout scenarios.
+
+### Over-Specific Checkout Contract
+
+Risk:
+
+- Designing the core app around one backend payload would prevent broad reuse.
+
+Mitigation:
+
+- Keep a provider-neutral order model.
+- Convert to adapter payloads at the edge.
+
+### Missing Zero-Config Flow
+
+Risk:
+
+- If the new app requires a remote checkout service, open-source users cannot evaluate it quickly.
+
+Mitigation:
+
+- Ship a mock checkout adapter as the default.
+- Make external adapters optional.
+
+### Money And Validation Errors
+
+Risk:
+
+- Legacy numeric parsing allowed weak server-side validation.
+
+Mitigation:
+
+- Define amount handling rules explicitly.
+- Validate quantities, currency, item totals, and required customer fields.
+
+### Result Page Ambiguity
+
+Risk:
+
+- Success/failure pages that only read query params may hide real checkout state.
+
+Mitigation:
+
+- For mock mode, store local checkout state.
+- For adapter mode, show both redirect params and the last known checkout session state when available.
+
+## 5. New fake-shop Boundaries
+
+### In Scope
+
+- Fake storefront UI.
+- Sample products and carts.
+- Editable customer and shipping/billing details.
+- Generic order creation.
+- Mock checkout flow.
+- Success, failure, and cancel result pages.
+- Developer-visible request/response inspection for adapters.
+- Public env examples.
+- Public smoke scripts.
+- Provider-neutral internal data model.
+- Optional adapter layer for real checkout APIs.
+
+### Out Of Scope
+
+- Private runtime validation.
+- Private service orchestration.
+- Private registry/configuration concepts.
+- Production merchant operations.
+- Production authentication.
+- Production payment processing.
+- Production inventory management.
+- Production settlement, refunds, or accounting.
+- Historical proxy flows.
+- Hard-coded private seed IDs.
+
+### Ownership Boundary
+
+The new fake-shop owns:
+
+- What a fake customer sees.
+- What test order data is generated.
+- How a local demo checkout behaves.
+- How generic order data is handed to configured adapters.
+- How result pages display checkout outcomes.
+
+The new fake-shop does not own:
+
+- External provider contracts.
+- Remote service lifecycle.
+- Real payment authorization.
+- Merchant onboarding.
+- Provider dashboards.
+
+### Public Consumer Direction
+
+The target user is an external developer who wants a simple fake store to test checkout integrations. They should be able to:
+
+- Clone the project.
+- Install dependencies.
+- Start the app.
+- Create a sample order in mock mode.
+- See success/failure redirect behavior.
+- Optionally configure an adapter for their own checkout backend.
+- Understand every required env variable from public documentation.
+
+The project should be small, readable, and predictable. Its default mode should demonstrate a full fake checkout without private infrastructure.
+
+## Final Decision
+
+Use `fake-shop-old` as a reference for useful checkout-testing concepts, not as a source architecture. The new `fake-shop` should be rebuilt as a provider-neutral, open-source fake consumer shop with a zero-config mock flow and optional adapter integrations.
+
+ANALYSIS COMPLETE
