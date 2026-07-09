@@ -6,26 +6,57 @@ Help users run fake-shop for the first time.
 
 ## Status
 
-Planned.
+Active foundation.
 
 ## Description
 
-This guide will cover clone, install, local run, and first demo steps without assuming external infrastructure.
+This guide covers the first local run and demo path without assuming external infrastructure.
 
-## Placeholder Sections
+## Clone
 
-### Clone
+Clone the repository:
 
-Planned.
+```bash
+git clone git@github.com:nick-roust/fake-shop.git
+cd fake-shop
+```
 
-### Install
+## Install
 
-Planned.
+Install dependencies:
 
-### Run Locally
+```bash
+pnpm install
+```
 
-Planned.
+## Run Locally
 
-### First Demo
+Start the application:
 
-Planned.
+```bash
+pnpm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+## First Demo
+
+Open developer tools:
+
+```text
+http://localhost:3000/developer
+```
+
+Select `Load sample data`, then follow the demo path links to inspect:
+
+- sample shop;
+- products;
+- checkout preparation;
+- orders;
+- integration settings.
+
+Mock mode is available by default and does not require external services.

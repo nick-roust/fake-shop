@@ -35,4 +35,9 @@ export const navigationItems = [
     href: "/shops",
     description: "Configure checkout mode from shop details.",
   },
+  {
+    label: "Developer Tools",
+    href: "/developer",
+    description: "Inspect local demo state and load sample data.",
+  },
 ] as const satisfies readonly NavigationItem[];

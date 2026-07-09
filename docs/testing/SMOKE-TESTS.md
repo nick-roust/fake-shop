@@ -6,22 +6,45 @@ Describe planned smoke test documentation for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
 ## Description
 
-This document will define reproducible demo flows and CI validation expectations.
+This document defines the current foundation smoke checks used for local demo validation.
 
-## Placeholder Sections
+## Reproducible Demo Flows
 
-### Reproducible Demo Flows
+Start the application:
 
-Planned.
+```bash
+pnpm run dev
+```
 
-### CI Validation
+Open:
 
-Planned.
+```text
+http://localhost:3000/developer
+```
 
-### Smoke Test Results
+Load sample data and inspect the sample shop, products, checkout preparation, orders, and
+integration settings routes.
 
-Planned.
+## CI Validation
+
+Run static validation:
+
+```bash
+pnpm run demo:check
+```
+
+Run route smoke validation while the application is running:
+
+```bash
+pnpm run smoke:routes
+```
+
+The smoke checks use only public local routes and do not depend on external services.
+
+## Smoke Test Results
+
+Smoke test results should be recorded in pull request or release validation notes.
