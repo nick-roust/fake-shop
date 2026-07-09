@@ -1,4 +1,4 @@
 export const appConfig = {
-  name: "fake-shop",
+  name: "FAKE SHOP",
   description: "Independent open-source reference commerce application.",
 } as const;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState, LoadingState } from "@/components/ui/state";
-import { Grid, Stack } from "@/components/ui/layout";
+import { Stack } from "@/components/ui/layout";
 import { StatusBadge } from "@/components/ui/status";
 import {
   Table,
@@ -47,7 +47,7 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <Grid>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           description="Configured storefronts in local demo storage."
           label="Shops"
@@ -68,7 +68,7 @@ export function DashboardPage() {
           label="Checkout sessions"
           value={summary.checkoutSessions.total.toString()}
         />
-      </Grid>
+      </div>
 
       <Card>
         <CardHeader>
@@ -180,9 +180,9 @@ function ActionLink({
 }) {
   const className =
     variant === "primary"
-      ? "inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
+      ? "inline-flex h-10 items-center justify-center rounded-md bg-[var(--primary)] px-4 text-sm font-medium text-[var(--primary-foreground)] hover:opacity-90"
       : variant === "secondary"
-        ? "inline-flex h-10 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground hover:bg-muted"
+        ? "inline-flex h-10 items-center justify-center rounded-md bg-[var(--secondary)] px-4 text-sm font-medium text-[var(--secondary-foreground)] hover:bg-muted"
         : "inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium hover:bg-muted";
 
   return (

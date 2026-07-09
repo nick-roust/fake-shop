@@ -49,8 +49,57 @@ export function ThemeSwitcher() {
   }
 
   return (
-    <Button aria-label="Toggle theme" onClick={toggleTheme} type="button">
-      {theme === "dark" ? "Light" : "Dark"}
+    <Button
+      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      className="size-10 px-0"
+      onClick={toggleTheme}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      type="button"
+      variant="outline"
+    >
+      {theme === "dark" ? <SunIcon /> : <MoonIcon />}
     </Button>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 7 7 0 1 0 20.5 14.5Z" />
+    </svg>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
   );
 }
