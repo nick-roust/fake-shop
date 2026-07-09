@@ -5,4 +5,5 @@ out/
 .next/
 coverage/
 fake-shop-old/
+next-env.d.ts
 pnpm-lock.yaml

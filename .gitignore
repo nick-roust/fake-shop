@@ -9,6 +9,7 @@ build/
 out/
 .next/
 coverage/
+next-env.d.ts
 
 # legacy audit source kept outside the new fake-shop repository
 fake-shop-old/

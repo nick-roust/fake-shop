@@ -1,6 +1,9 @@
 import js from "@eslint/js";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+import tseslint from "typescript-eslint";
 
-export default [
+const eslintConfig = [
   {
     ignores: [
       "node_modules/**",
@@ -10,9 +13,13 @@ export default [
       ".next/**",
       "coverage/**",
       "fake-shop-old/**",
+      "next-env.d.ts",
     ],
   },
   js.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...nextVitals,
+  ...nextTs,
   {
     files: ["**/*.mjs", "**/*.js"],
     languageOptions: {
@@ -24,3 +31,5 @@ export default [
     },
   },
 ];
+
+export default eslintConfig;
