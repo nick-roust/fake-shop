@@ -7,13 +7,13 @@ export type NavigationItem = {
 export const navigationItems = [
   {
     label: "Dashboard",
-    href: "#dashboard",
+    href: "/",
     description: "Future overview area.",
   },
   {
     label: "Shops",
-    href: "#shops",
-    description: "Future shop management area.",
+    href: "/shops",
+    description: "Manage fake storefronts.",
   },
   {
     label: "Products",
