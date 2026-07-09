@@ -6,6 +6,7 @@ import { type Category, type Product } from "@/domain/product";
 import { type Shop } from "@/domain/shop";
 
 import { type EntityRepository } from "./entity-repository";
+import { type IntegrationConfiguration } from "../types";
 
 export type ShopRepository = EntityRepository<Shop>;
 export type CategoryRepository = EntityRepository<Category>;
@@ -14,6 +15,7 @@ export type CustomerRepository = EntityRepository<Customer>;
 export type CartRepository = EntityRepository<Cart>;
 export type OrderRepository = EntityRepository<Order>;
 export type CheckoutSessionRepository = EntityRepository<CheckoutSession>;
+export type IntegrationConfigurationRepository = EntityRepository<IntegrationConfiguration>;
 
 export type FakeShopRepositories = {
   shops: ShopRepository;
@@ -23,4 +25,5 @@ export type FakeShopRepositories = {
   carts: CartRepository;
   orders: OrderRepository;
   checkoutSessions: CheckoutSessionRepository;
+  integrationConfigurations: IntegrationConfigurationRepository;
 };

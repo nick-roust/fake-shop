@@ -95,6 +95,13 @@ export class LocalDemoStore {
         },
         () => this.persist()
       ),
+      integrationConfigurations: new SnapshotEntityRepository(
+        () => this.snapshot.integrationConfigurations,
+        (integrationConfigurations) => {
+          this.snapshot = { ...this.snapshot, integrationConfigurations };
+        },
+        () => this.persist()
+      ),
     };
   }
 }

@@ -5,6 +5,17 @@ import { type Order } from "@/domain/order";
 import { type Category, type Product } from "@/domain/product";
 import { type Shop } from "@/domain/shop";
 
+export type IntegrationMode = "mock" | "external";
+
+export type IntegrationConfiguration = {
+  id: string;
+  shopId: string;
+  mode: IntegrationMode;
+  externalBaseUrl?: string;
+  externalReference?: string;
+  updatedAt: string;
+};
+
 export type FakeShopStorageSnapshot = {
   shops: Shop[];
   categories: Category[];
@@ -13,6 +24,7 @@ export type FakeShopStorageSnapshot = {
   carts: Cart[];
   orders: Order[];
   checkoutSessions: CheckoutSession[];
+  integrationConfigurations: IntegrationConfiguration[];
 };
 
 export type FakeShopSeed = Partial<FakeShopStorageSnapshot>;
@@ -32,6 +44,7 @@ export function createEmptyStorageSnapshot(): FakeShopStorageSnapshot {
     carts: [],
     orders: [],
     checkoutSessions: [],
+    integrationConfigurations: [],
   };
 }
 
@@ -44,5 +57,6 @@ export function createStorageSnapshot(seed: FakeShopSeed = {}): FakeShopStorageS
     carts: seed.carts ?? [],
     orders: seed.orders ?? [],
     checkoutSessions: seed.checkoutSessions ?? [],
+    integrationConfigurations: seed.integrationConfigurations ?? [],
   };
 }

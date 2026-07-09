@@ -105,6 +105,23 @@ export function ShopDetails({
           </Link>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Integration settings</CardTitle>
+          <CardDescription>
+            Configure checkout mode for this shop without executing external behavior.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            className="inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium hover:bg-muted"
+            href={`/shops/${shop.id}/integration-settings`}
+          >
+            Open integration settings
+          </Link>
+        </CardContent>
+      </Card>
     </Stack>
   );
 }

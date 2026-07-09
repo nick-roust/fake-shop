@@ -32,7 +32,7 @@ export const navigationItems = [
   },
   {
     label: "Integration Settings",
-    href: "#integration-settings",
-    description: "Future adapter configuration area.",
+    href: "/shops",
+    description: "Configure checkout mode from shop details.",
   },
 ] as const satisfies readonly NavigationItem[];
