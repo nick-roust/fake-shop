@@ -172,7 +172,7 @@ const cancelledOrder = createOrder({
   total: createMoney(18, "USD"),
 });
 
-export const demoCheckoutScenarios = ["success", "failure", "cancel"] as const;
+export const demoCheckoutScenarios = ["success", "failure", "cancelled"] as const;
 
 export function createDemoSeed(seed: FakeShopSeed = {}): FakeShopSeed {
   return {
@@ -219,7 +219,7 @@ export function createDemoSeed(seed: FakeShopSeed = {}): FakeShopSeed {
           adapterName: "Mock checkout",
           message: "Sample mock checkout cancellation for developer inspection.",
           recordedAt: demoCancelledAt,
-          scenario: "cancel",
+          scenario: "cancelled",
         },
       }),
     ],

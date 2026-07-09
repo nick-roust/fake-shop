@@ -37,6 +37,12 @@ Run static validation:
 pnpm run demo:check
 ```
 
+Run smoke test coverage:
+
+```bash
+pnpm run test:smoke
+```
+
 Run route smoke validation while the application is running:
 
 ```bash

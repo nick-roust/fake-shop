@@ -6,22 +6,32 @@ Define the testing documentation area for fake-shop.
 
 ## Status
 
-Planned.
+Active foundation.
 
 ## Description
 
-This document will link testing strategy, smoke tests, and validation guidance for fake-shop behavior.
+This document links testing strategy, smoke tests, and validation guidance for fake-shop behavior.
 
-## Placeholder Sections
+## Testing Overview
 
-### Testing Overview
+fake-shop uses a local testing foundation built on the Node.js test runner and TypeScript
+transpilation for project source files.
 
-Planned.
+Tests are grouped by responsibility:
 
-### Testing Documents
+- `tests/unit/`
+- `tests/integration/`
+- `tests/e2e/`
+- `tests/smoke/`
 
-Planned.
+## Testing Documents
 
-### Validation Boundaries
+Primary testing documents:
 
-Planned.
+- `docs/testing/TESTING-STRATEGY.md`
+- `docs/testing/SMOKE-TESTS.md`
+
+## Validation Boundaries
+
+Tests should protect public project behavior and architecture boundaries. They should not depend on
+external services, private infrastructure, or provider-specific behavior.
