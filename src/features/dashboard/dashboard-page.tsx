@@ -178,15 +178,27 @@ function ActionLink({
   href: string;
   variant?: "outline" | "primary" | "secondary";
 }) {
+  const style =
+    variant === "primary"
+      ? {
+          backgroundColor: "var(--primary)",
+          color: "var(--primary-foreground)",
+        }
+      : variant === "secondary"
+        ? {
+            backgroundColor: "var(--secondary)",
+            color: "var(--secondary-foreground)",
+          }
+        : undefined;
   const className =
     variant === "primary"
-      ? "inline-flex h-10 items-center justify-center rounded-md bg-[var(--primary)] px-4 text-sm font-medium text-[var(--primary-foreground)] hover:opacity-90"
+      ? "inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium hover:opacity-90"
       : variant === "secondary"
-        ? "inline-flex h-10 items-center justify-center rounded-md bg-[var(--secondary)] px-4 text-sm font-medium text-[var(--secondary-foreground)] hover:bg-muted"
+        ? "inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium hover:bg-muted"
         : "inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium hover:bg-muted";
 
   return (
-    <Link className={className} href={href}>
+    <Link className={className} href={href} style={style}>
       {children}
     </Link>
   );
