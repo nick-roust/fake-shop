@@ -8,7 +8,20 @@ Describe the local development workflow for fake-shop.
 
 Active foundation.
 
-## Development Commands
+## Local Runtime Workflows
+
+Docker is the recommended first-run workflow because it provides a reproducible local development
+environment:
+
+```bash
+docker compose up --build
+```
+
+Open `http://127.0.0.1:3000`, then use `/developer` to load sample data and follow the mock checkout
+flow. Docker is a local runtime option, not a production deployment architecture.
+
+Contributors may instead use the native Node.js and pnpm development workflow. It offers the same
+application behavior with the framework development server:
 
 Install dependencies:
 
@@ -21,6 +34,21 @@ Start the local application:
 ```bash
 pnpm run dev
 ```
+
+Open the native development server at `http://localhost:3000`.
+
+Both workflows preserve:
+
+- browser-local shop, demo, and checkout state in `localStorage`;
+- mock checkout as the default path;
+- the existing provider-neutral checkout adapter boundary;
+- optional per-shop external integration settings;
+- operation without a database, credentials, or required external service.
+
+Container packaging does not seed data, create checkout sessions, add server-side persistence, or
+change configuration precedence.
+
+## Development Commands
 
 Build the application:
 
@@ -58,11 +86,9 @@ Important source areas:
 
 ## Demo Data Workflow
 
-Open the developer tools route after starting the application:
-
-```text
-http://localhost:3000/developer
-```
+Open the developer tools route after starting the application. Use
+`http://127.0.0.1:3000/developer` for Docker or `http://localhost:3000/developer` for native
+development.
 
 Use this route to:
 

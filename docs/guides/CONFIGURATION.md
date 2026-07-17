@@ -28,6 +28,28 @@ FAKE_SHOP_SMOKE_BASE_URL=http://127.0.0.1:3000
 
 See `.env.example` for the current example values.
 
+## Docker Local Runtime
+
+Docker Compose uses the existing public configuration semantics and defaults the local runtime to:
+
+```text
+FAKE_SHOP_MODE=mock
+FAKE_SHOP_PUBLIC_URL=http://127.0.0.1:3000
+```
+
+Start it with:
+
+```bash
+docker compose up --build
+```
+
+No additional secrets, credentials, database, state volume, or external infrastructure are
+required. Compose configuration does not override browser-local per-shop integration settings or
+introduce new configuration precedence.
+
+Docker packages the same application behavior. Shop, demo, checkout, and integration-setting state
+remains in browser `localStorage`; it is not moved into the container or persisted by a server.
+
 ## Mock Mode
 
 Mock mode is available by default. It supports local success, failure, and cancellation scenarios through the mock checkout adapter.

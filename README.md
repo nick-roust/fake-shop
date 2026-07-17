@@ -24,35 +24,33 @@ fake-shop is not a production ecommerce platform, payment processor, banking sys
 
 ## Quick Start
 
-Prerequisites:
+Docker is the recommended first-run experience for fake-shop v0.2.0. It provides a reproducible
+local runtime without changing the application's local-first architecture.
 
-- Node.js 22.13 or newer;
-- pnpm 11 or newer.
+Requirement:
 
-Install dependencies:
+- Docker with Compose support.
 
-```bash
-pnpm install
-```
-
-Start the local application:
+Build and start fake-shop:
 
 ```bash
-pnpm run dev
+docker compose up --build
 ```
 
 Open:
 
 ```text
-http://localhost:3000
+http://127.0.0.1:3000
 ```
+
+No database, external service, or credentials are required. Mock checkout works by default.
 
 ## First Demo
 
 Open developer tools:
 
 ```text
-http://localhost:3000/developer
+http://127.0.0.1:3000/developer
 ```
 
 Select `Load sample data`, then follow the demo links through:
@@ -60,10 +58,31 @@ Select `Load sample data`, then follow the demo links through:
 - sample shop;
 - products;
 - checkout preparation;
+- mock checkout;
 - orders;
 - integration settings.
 
-Mock mode works by default and does not require external services.
+Shop, demo, and checkout state remains in the browser's `localStorage`. The container does not
+move application state to a server or automatically load sample data.
+
+## Native Contributor Workflow
+
+Contributors can run the same application directly with Node.js 22.13 or newer and pnpm 11 or
+newer:
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000/developer
+```
+
+Docker is optional for native development. Both workflows preserve the same mock-default checkout,
+provider-neutral adapter, and browser-local persistence behavior.
 
 ## Checkout Model
 
@@ -128,11 +147,13 @@ Release stability rules:
 - Architecture boundaries must remain valid.
 - Temporary development artifacts must be removed before merge.
 
-Docker and deployment:
+Docker local runtime:
 
-- Local Docker execution is available through `docker compose up --build`.
-- Docker is optional; the primary native workflow remains `pnpm install` and `pnpm run dev`.
-- Container packaging does not change the browser-local state or checkout integration model.
+- `docker compose up --build` is the recommended first-run workflow.
+- Docker provides a reproducible local development environment; it is not documented as a
+  production deployment target.
+- Native Node.js and pnpm commands remain available for contributors.
+- Container packaging does not change browser-local state or the checkout integration model.
 
 ## Documentation
 
