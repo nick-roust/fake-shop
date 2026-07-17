@@ -51,6 +51,27 @@ Open:
 http://localhost:3000
 ```
 
+## Run with Docker
+
+Build and start the production application locally:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+```text
+http://127.0.0.1:3000
+```
+
+Compose publishes the application only on the host loopback interface. The container runs the
+same local-first application in mock mode by default and does not require a database, external
+service, or state volume. Shop, demo, and checkout state remains in the browser's `localStorage`.
+
+Container health reports web-runtime availability at `http://127.0.0.1:3000/api/health`; it does
+not inspect or modify browser-local state or validate an external checkout provider.
+
 ## First Demo Flow
 
 Open developer tools:

@@ -130,9 +130,9 @@ Release stability rules:
 
 Docker and deployment:
 
-- Docker is not part of the current v0.1 development requirement.
-- The primary supported workflow is `pnpm install` and `pnpm run dev`.
-- Future Docker support should be added as a separate capability without changing the local development model.
+- Local Docker execution is available through `docker compose up --build`.
+- Docker is optional; the primary native workflow remains `pnpm install` and `pnpm run dev`.
+- Container packaging does not change the browser-local state or checkout integration model.
 
 ## Documentation
 
