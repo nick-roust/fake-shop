@@ -36,7 +36,7 @@ export function DashboardPage() {
         <div>
           <h1 className="text-2xl font-semibold">Dashboard</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Review local shops, catalog coverage, order activity, and checkout outcomes.
+            Review your local shops, catalog coverage, order activity, and checkout outcomes.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">

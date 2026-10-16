@@ -69,7 +69,7 @@ export function ShopForm({ initialShop, onCancel, onSubmit, submitLabel }: ShopF
             <Input
               id={`${fieldId}-name`}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Demo storefront"
+              placeholder="Shop name"
               value={name}
             />
             <FieldError>{error}</FieldError>
@@ -136,7 +136,9 @@ export function ShopForm({ initialShop, onCancel, onSubmit, submitLabel }: ShopF
       </FieldGroup>
 
       <div className="flex flex-wrap gap-3">
-        <Button type="submit">{submitLabel}</Button>
+        <Button onClick={(event) => event.currentTarget.form?.requestSubmit()} type="button">
+          {submitLabel}
+        </Button>
         {onCancel ? (
           <Button onClick={onCancel} type="button" variant="secondary">
             Cancel

@@ -1,0 +1,144 @@
+name: Playwright UI Tests
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-tests:
+    name: Run external UI tests against deployment
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      (github.event.deployment.environment == 'Preview' ||
+       github.event.deployment.environment == 'Production') &&
+      github.event.deployment_status.environment_url != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout fake-shop
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Checkout Playwright tests
+        uses: actions/checkout@v5
+        with:
+          repository: Yath27/fake-shop-playwright-tests
+          ref: main
+          path: playwright-tests
+          token: ${{ secrets.PLAYWRIGHT_TESTS_REPO_TOKEN }}
+
+      - name: Install Playwright project dependencies
+        working-directory: playwright-tests
+        run: npm ci
+
+      - name: Install Chromium and system dependencies
+        working-directory: playwright-tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Wait for deployment and run UI tests
+        shell: bash
+        run: |
+          bypass_header=()
+          if [[ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]]; then
+            bypass_header+=(--header "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET")
+          fi
+
+          for attempt in {1..30}; do
+            if curl --fail --silent "${bypass_header[@]}" "$BASE_URL/api/health" > /dev/null; then
+              break
+            fi
+            sleep 2
+          done
+
+          if ! curl --fail --silent "${bypass_header[@]}" "$BASE_URL/api/health" > /dev/null; then
+            echo "Vercel deployment did not become healthy: $BASE_URL"
+            exit 1
+          fi
+
+          cd playwright-tests
+          npm test
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+  merge-preview:
+    name: Merge tested preview PR to main
+    needs: ui-tests
+    if: >-
+      needs.ui-tests.result == 'success' &&
+      github.event.deployment.environment == 'Preview'
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Merge the tested preview pull request after CI passes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYMENT_SHA: ${{ github.event.deployment.sha }}
+        run: |
+          set -euo pipefail
+
+          pr_numbers="$(gh api --paginate "repos/$GITHUB_REPOSITORY/commits/$DEPLOYMENT_SHA/pulls" \
+            -H "Accept: application/vnd.github+json" \
+            | jq -r --arg sha "$DEPLOYMENT_SHA" \
+              '.[] | select(.state == "open" and .base.ref == "main" and .head.sha == $sha) | .number')"
+
+          if [[ -z "$pr_numbers" ]]; then
+            echo "No open pull request to main matches the tested deployment. Nothing to merge."
+            exit 0
+          fi
+
+          if [[ "$(printf '%s\n' "$pr_numbers" | wc -l)" -ne 1 ]]; then
+            echo "Expected one matching open pull request, found multiple: $pr_numbers"
+            exit 1
+          fi
+
+          pr_number="$pr_numbers"
+          ci_status=""
+          ci_conclusion=""
+
+          for attempt in {1..40}; do
+            ci_result="$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow ci.yml \
+              --commit "$DEPLOYMENT_SHA" \
+              --limit 10 \
+              --json status,conclusion \
+              --jq '.[0] // {} | [.status // "", .conclusion // ""] | @tsv')"
+            IFS=$'\t' read -r ci_status ci_conclusion <<< "$ci_result"
+
+            if [[ "$ci_status" == "completed" ]]; then
+              break
+            fi
+
+            sleep 15
+          done
+
+          if [[ "$ci_status" != "completed" || "$ci_conclusion" != "success" ]]; then
+            echo "CI did not complete successfully for tested commit $DEPLOYMENT_SHA (status=$ci_status, conclusion=$ci_conclusion)."
+            exit 1
+          fi
+
+          current_head_sha="$(gh pr view "$pr_number" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json headRefOid \
+            --jq .headRefOid)"
+          if [[ "$current_head_sha" != "$DEPLOYMENT_SHA" ]]; then
+            echo "Pull request #$pr_number has advanced since the tested deployment. Skipping merge."
+            exit 1
+          fi
+
+          gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash
