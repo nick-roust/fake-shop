@@ -1,9 +1,4 @@
 import { type CheckoutAdapter, type CheckoutRequest, type CheckoutResult } from "./adapter";
-import {
-  type ExternalCheckoutResponseBoundary,
-  mapCheckoutRequestToExternalBoundary,
-  mapExternalBoundaryResponseToCheckoutResult,
-} from "./external-checkout-mapping";
 
 export type ExternalCheckoutScenario = "boundary-check";
 
@@ -15,33 +10,21 @@ export type ExternalCheckoutAdapterConfig = {
 export const externalCheckoutAdapter: CheckoutAdapter<ExternalCheckoutScenario> = {
   id: "external-checkout",
   name: "External checkout",
-  execute(request: CheckoutRequest, scenario: ExternalCheckoutScenario): CheckoutResult {
-    const config = getExternalCheckoutConfig(request.configuration);
-    const mappedRequest = mapCheckoutRequestToExternalBoundary(request, config);
-    const configurationReady =
-      mappedRequest.endpointConfigured && mappedRequest.referenceConfigured;
-    const response: ExternalCheckoutResponseBoundary = {
-      outcome: configurationReady ? "not-executed" : "configuration-missing",
-      message: configurationReady
-        ? "External checkout boundary prepared. No external call was made."
-        : "External checkout boundary requires complete configuration.",
+  supportsInitiation: false,
+  async execute(
+    _request: CheckoutRequest,
+    scenario: ExternalCheckoutScenario
+  ): Promise<CheckoutResult> {
+    return {
+      kind: "unsupported",
+      diagnostics: {
+        adapterId: externalCheckoutAdapter.id,
+        adapterName: externalCheckoutAdapter.name,
+        scenario,
+        message: "External checkout is not implemented. No external call was made.",
+        executedAt: new Date().toISOString(),
+        provenance: "local",
+      },
     };
-
-    return mapExternalBoundaryResponseToCheckoutResult(response, {
-      adapterId: externalCheckoutAdapter.id,
-      adapterName: externalCheckoutAdapter.name,
-      scenario,
-      message: response.message,
-      executedAt: new Date().toISOString(),
-    });
   },
 };
-
-function getExternalCheckoutConfig(
-  configuration: CheckoutRequest["configuration"]
-): ExternalCheckoutAdapterConfig {
-  return {
-    endpoint: configuration?.endpoint,
-    reference: configuration?.reference,
-  };
-}

@@ -1,5 +1,5 @@
 import {
-  createStorageSnapshot,
+  migrateStoredSnapshot,
   type FakeShopStorageSnapshot,
   type LocalPersistenceDriver,
 } from "../types";
@@ -30,9 +30,19 @@ export class BrowserLocalStoragePersistenceDriver implements LocalPersistenceDri
     }
 
     try {
-      return createStorageSnapshot(JSON.parse(rawSnapshot) as FakeShopStorageSnapshot);
+      const parsed = JSON.parse(rawSnapshot) as unknown;
+      const snapshot = migrateStoredSnapshot(parsed);
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        !Array.isArray(parsed) &&
+        !("schemaVersion" in parsed)
+      ) {
+        this.storage.setItem(this.storageKey, JSON.stringify(snapshot));
+      }
+      return snapshot;
     } catch {
-      return null;
+      throw new Error("Unable to read fake-shop local data. Stored data was left unchanged.");
     }
   }
 

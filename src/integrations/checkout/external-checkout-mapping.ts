@@ -12,7 +12,7 @@ export type ExternalCheckoutRequestBoundary = {
 };
 
 export type ExternalCheckoutResponseBoundary = {
-  outcome: "configuration-missing" | "not-executed";
+  outcome: "unsupported";
   message: string;
 };
 
@@ -36,7 +36,7 @@ export function mapExternalBoundaryResponseToCheckoutResult(
   diagnostics: CheckoutResult["diagnostics"]
 ): CheckoutResult {
   return {
-    status: "failed",
+    kind: "unsupported",
     diagnostics: {
       ...diagnostics,
       message: response.message,

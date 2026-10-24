@@ -1,4 +1,9 @@
-import { type CheckoutAdapter, type CheckoutRequest, type CheckoutResult } from "./adapter";
+import {
+  type CheckoutAdapter,
+  type CheckoutRequest,
+  type CheckoutResult,
+  type CheckoutResultStatus,
+} from "./adapter";
 
 export type MockCheckoutScenario = "success" | "failure" | "cancelled";
 
@@ -6,7 +11,7 @@ const scenarioStatus = {
   success: "succeeded",
   failure: "failed",
   cancelled: "cancelled",
-} as const satisfies Record<MockCheckoutScenario, CheckoutResult["status"]>;
+} as const satisfies Record<MockCheckoutScenario, CheckoutResultStatus>;
 
 const scenarioMessages = {
   success: "Mock checkout completed successfully.",
@@ -17,8 +22,12 @@ const scenarioMessages = {
 export const mockCheckoutAdapter: CheckoutAdapter<MockCheckoutScenario> = {
   id: "mock-checkout",
   name: "Mock checkout",
-  execute(_request: CheckoutRequest, scenario: MockCheckoutScenario): CheckoutResult {
+  async execute(
+    _request: CheckoutRequest,
+    scenario: MockCheckoutScenario
+  ): Promise<CheckoutResult> {
     return {
+      kind: "completed",
       status: scenarioStatus[scenario],
       diagnostics: {
         adapterId: mockCheckoutAdapter.id,
@@ -26,6 +35,7 @@ export const mockCheckoutAdapter: CheckoutAdapter<MockCheckoutScenario> = {
         scenario,
         message: scenarioMessages[scenario],
         executedAt: new Date().toISOString(),
+        provenance: "simulated",
       },
     };
   },

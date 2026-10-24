@@ -11,7 +11,7 @@ import { createManagedShop } from "../../src/features/shops/shop-service";
 import { getOrderRecord, listShopOrders } from "../../src/features/orders/order-service";
 import { resetLocalDemoState } from "../../src/storage/local-demo-boundary";
 
-test("main demo journey reaches order details after mock checkout", () => {
+test("service-level main demo journey reaches order details after mock checkout", async () => {
   resetLocalDemoState();
 
   const shop = createManagedShop({
@@ -43,7 +43,7 @@ test("main demo journey reaches order details after mock checkout", () => {
     postalCode: "90000",
     region: "CA",
   });
-  const execution = runMockCheckout(readiness.session, "success");
+  const execution = await runMockCheckout(readiness.session, "success");
   const orderRecord = getOrderRecord(execution.order.id, shop.id);
   const orders = listShopOrders(shop.id);
 

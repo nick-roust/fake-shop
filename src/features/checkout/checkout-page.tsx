@@ -22,6 +22,7 @@ import {
   removeCartItem,
   runExternalCheckoutBoundary,
   runMockCheckout,
+  startSimulatedRedirectCheckout,
   updateCheckoutSessionStatus,
   updateCartItemQuantity,
   type CheckoutReadiness,
@@ -148,7 +149,7 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
     }
   }
 
-  function handleRunMockCheckout() {
+  async function handleRunMockCheckout() {
     const session = readiness?.session ?? state.session;
 
     if (!session) {
@@ -157,7 +158,7 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
     }
 
     try {
-      const execution = runMockCheckout(session, mockScenario);
+      const execution = await runMockCheckout(session, mockScenario);
 
       setMockExecution(execution);
       setReadiness((current) =>
@@ -211,6 +212,22 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
       setError(
         caughtError instanceof Error ? caughtError.message : "External checkout boundary failed."
       );
+    }
+  }
+
+  async function handleStartSimulation() {
+    const session = readiness?.session ?? state.session;
+    if (!session) return;
+    try {
+      const execution = await startSimulatedRedirectCheckout(session);
+      setState((current) => ({ ...current, order: execution.order, session: execution.session }));
+      setReadiness((current) =>
+        current ? { ...current, order: execution.order, session: execution.session } : undefined
+      );
+      setError("");
+      if (execution.redirectUrl) window.location.assign(execution.redirectUrl);
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Simulated checkout failed.");
     }
   }
 
@@ -290,6 +307,25 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Async recovery demonstration</CardTitle>
+          <CardDescription>
+            Uses an explicitly simulated adapter. It does not process or verify payment.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <button
+            className="inline-flex h-10 w-fit items-center justify-center rounded-md border border-border px-4 text-sm font-medium hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+            disabled={visibleSession?.status !== "created"}
+            onClick={handleStartSimulation}
+            type="button"
+          >
+            Start simulated redirect checkout
+          </button>
+        </CardContent>
+      </Card>
+
       <ProductSelection onAddProduct={handleAddProduct} products={state.products} />
 
       <CartTable
@@ -353,7 +389,8 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
             </Badge>
           </div>
           <CardDescription>
-            Session state is visible and follows the neutral fake-shop lifecycle.
+            Manual demo controls simulate local statuses; they are not payment confirmation and
+            cannot override an adapter-bound pending attempt.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -372,26 +409,43 @@ export function CheckoutPage({ shopId }: CheckoutPageProps) {
                   label="Result time"
                   value={visibleSession.result?.recordedAt ?? "No result recorded"}
                 />
+                <SummaryItem
+                  label="Result provenance"
+                  value={visibleSession.result?.provenance ?? "Not recorded"}
+                />
+                <SummaryItem
+                  label="Adapter reference"
+                  value={visibleSession.result?.externalReference ?? "Not recorded"}
+                />
               </dl>
               <div className="flex flex-wrap gap-3">
                 <StatusButton
                   disabled={visibleSession.status !== "created"}
-                  label="Mark pending"
+                  label="Simulate pending"
                   onClick={() => handleStatusChange("pending")}
                 />
                 <StatusButton
-                  disabled={visibleSession.status !== "pending"}
-                  label="Mark succeeded"
+                  disabled={
+                    visibleSession.status !== "pending" ||
+                    visibleSession.adapterId !== "manual-demo-status"
+                  }
+                  label="Simulate succeeded"
                   onClick={() => handleStatusChange("succeeded")}
                 />
                 <StatusButton
-                  disabled={visibleSession.status !== "pending"}
-                  label="Mark failed"
+                  disabled={
+                    visibleSession.status !== "pending" ||
+                    visibleSession.adapterId !== "manual-demo-status"
+                  }
+                  label="Simulate failed"
                   onClick={() => handleStatusChange("failed")}
                 />
                 <StatusButton
-                  disabled={visibleSession.status !== "pending"}
-                  label="Mark cancelled"
+                  disabled={
+                    visibleSession.status !== "pending" ||
+                    visibleSession.adapterId !== "manual-demo-status"
+                  }
+                  label="Simulate cancelled"
                   onClick={() => handleStatusChange("cancelled")}
                 />
               </div>

@@ -24,7 +24,7 @@ test("developer demo data loads a reproducible local state", () => {
   assert.equal(inspectDeveloperState().integrationModes[0]?.mode, "mock");
 });
 
-test("mock checkout can complete from demo data through public services", () => {
+test("mock checkout can complete from demo data through public services", async () => {
   resetLocalDemoState();
   loadSampleDemoState();
 
@@ -36,7 +36,7 @@ test("mock checkout can complete from demo data through public services", () => 
   const session = repositories.checkoutSessions.save(
     createCheckoutSessionForOrder("sample-smoke-session", order)
   );
-  const execution = runMockCheckout(session, "success");
+  const execution = await runMockCheckout(session, "success");
 
   assert.equal(execution.status, "succeeded");
   assert.equal(execution.order.status, "completed");

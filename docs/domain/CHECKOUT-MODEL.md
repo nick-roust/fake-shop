@@ -6,15 +6,17 @@ The fake-shop checkout model defines how fake-shop moves from an order to a chec
 
 It exists to describe the relationship between an Order and a Checkout Session. An Order represents a submitted purchase request. A Checkout Session represents one attempt to complete checkout for that order.
 
-The checkout model is provider-neutral. It defines fake-shop concepts, lifecycle, status transitions, adapter interaction, mock mode behavior, and external API mode behavior without depending on a specific checkout provider.
+The checkout model is provider-neutral. It defines fake-shop concepts, lifecycle, status transitions,
+adapter interaction, and mock behavior without depending on a specific checkout provider.
 
-This document describes checkout meaning and flow only. It does not define code, database schemas, API contracts, provider payloads, or implementation details.
+This document describes checkout meaning and flow. The implementation uses a Promise-based adapter
+contract and browser-local storage; neither is a trusted payment ledger.
 
 ## 2. Checkout Principles
 
 - Order represents purchase request.
 - Checkout Session represents checkout attempt.
-- Adapter performs checkout execution.
+- Adapter performs or simulates checkout execution.
 - fake-shop owns visible checkout lifecycle.
 - External systems remain replaceable.
 - Mock mode and external API mode use the same checkout boundary.
@@ -55,7 +57,8 @@ Purpose:
 
 Description:
 
-- A Checkout Adapter receives checkout input from fake-shop and returns a normalized checkout result.
+- A Checkout Adapter receives checkout input from fake-shop and asynchronously returns a normalized
+  completed, pending, or unsupported result.
 - The adapter boundary keeps domain entities separate from external communication and provider-specific details.
 - Mock mode and external API mode both use this boundary.
 
@@ -67,7 +70,8 @@ Purpose:
 
 Description:
 
-- A Checkout Result reports the outcome of checkout execution using fake-shop neutral status vocabulary.
+- A completed Checkout Result reports a normalized outcome; a pending result may contain generic
+  navigation and recovery data.
 - It may include developer-facing diagnostics.
 - It must not replace fake-shop status with provider-specific status names.
 
@@ -86,7 +90,7 @@ Adapter selected
 ↓
 Checkout execution
 ↓
-Result received
+Completed result or pending recovery information received
 ↓
 Checkout Session updated
 ↓
@@ -111,7 +115,8 @@ fake-shop selects the adapter based on the shop integration configuration. The a
 
 ### Checkout execution
 
-The selected adapter performs checkout execution. Mock mode performs local simulated behavior. External API mode communicates with a configured external backend through the adapter boundary.
+The selected adapter performs checkout execution. Mock mode performs local simulated behavior.
+External mode is currently unsupported and makes no external call.
 
 ### Result received
 
@@ -233,15 +238,9 @@ Create order
 ↓
 Create checkout session
 ↓
-Select external adapter
+Select external mode
 ↓
-Send checkout request
-↓
-Receive external response
-↓
-Map response into fake-shop status
-↓
-Update checkout session
+Report unsupported without changing checkout session
 ```
 
 Rules:
@@ -249,7 +248,10 @@ Rules:
 - external provider behavior stays inside adapter;
 - domain remains unchanged.
 
-External API mode allows developers to connect fake-shop to an external checkout backend. The external adapter owns communication and mapping. The domain keeps the same Order, Checkout Session, and status vocabulary used by mock mode.
+External mode is currently an integration placeholder. The external adapter reports unsupported and
+does not execute a call. Configuration alone never creates pending state, an external reference, or a
+redirect. A simulated redirect adapter demonstrates asynchronous recovery locally and labels its
+result as simulated; it does not process or verify payment.
 
 ## 8. Adapter Boundary
 
@@ -264,7 +266,7 @@ communicate with:
 
 Adapter responsibilities:
 
-- external communication;
+- adapter-owned external communication when implemented;
 - response mapping;
 - diagnostics.
 
@@ -276,6 +278,11 @@ Adapter must not:
 - define fake-shop statuses.
 
 The adapter boundary keeps checkout execution replaceable. The domain provides the commerce context, and the adapter returns a normalized result.
+
+An uncertain initiation exception leaves the session pending with diagnostics. fake-shop does not
+retry it automatically or turn it into a failed payment. A browser return only locates a stored
+session; query parameters and local UI state cannot confirm an external outcome. Adapter-reported
+results are not cryptographically verified by fake-shop.
 
 ## 9. Result Handling
 

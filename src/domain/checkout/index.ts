@@ -2,11 +2,15 @@ import { type Order } from "../order";
 import { type EntityId, requireNonEmpty } from "../shared";
 
 export type CheckoutSessionStatus = "created" | "pending" | "succeeded" | "failed" | "cancelled";
+export type CheckoutAdapterConfiguration = Record<string, string | undefined>;
 
 export type CheckoutSessionResultInfo = {
   adapterId?: string;
   adapterName?: string;
+  externalReference?: string;
   message?: string;
+  provenance?: "adapter-reported" | "simulated" | "local";
+  redirectUrl?: string;
   recordedAt?: string;
   scenario?: string;
 };
@@ -16,6 +20,8 @@ export type CheckoutSession = {
   orderId: EntityId;
   status: CheckoutSessionStatus;
   createdAt: string;
+  adapterId?: string;
+  adapterConfiguration?: CheckoutAdapterConfiguration;
   result?: CheckoutSessionResultInfo;
 };
 
@@ -25,6 +31,8 @@ export type CreateCheckoutSessionInput = {
   createdAt?: string;
   result?: CheckoutSessionResultInfo;
   status?: CheckoutSessionStatus;
+  adapterId?: string;
+  adapterConfiguration?: CheckoutAdapterConfiguration;
 };
 
 const allowedTransitions: Record<CheckoutSessionStatus, CheckoutSessionStatus[]> = {
@@ -40,6 +48,10 @@ export function createCheckoutSession(input: CreateCheckoutSessionInput): Checko
     id: requireNonEmpty(input.id, "Checkout session id"),
     orderId: requireNonEmpty(input.orderId, "Order id"),
     createdAt: input.createdAt ?? new Date().toISOString(),
+    adapterId: input.adapterId?.trim() || undefined,
+    adapterConfiguration: input.adapterConfiguration
+      ? { ...input.adapterConfiguration }
+      : undefined,
     result: normalizeResultInfo(input.result),
     status: input.status ?? "created",
   };
@@ -94,7 +106,10 @@ function normalizeResultInfo(
   const normalized = {
     adapterId: result.adapterId?.trim() || undefined,
     adapterName: result.adapterName?.trim() || undefined,
+    externalReference: result.externalReference?.trim() || undefined,
     message: result.message?.trim() || undefined,
+    provenance: result.provenance,
+    redirectUrl: result.redirectUrl?.trim() || undefined,
     recordedAt: result.recordedAt?.trim() || undefined,
     scenario: result.scenario?.trim() || undefined,
   };
